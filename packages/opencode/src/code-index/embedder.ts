@@ -37,7 +37,8 @@ export const layer = Layer.effect(
     const semaphore = yield* Semaphore.make(2) // max 2 concurrent embedding calls
 
     // Lazy-load the transformers pipeline (heavy import, only needed for indexing)
-    let pipeline: ((texts: string[], opts?: Record<string, unknown>) => Promise<{ data: Float32Array }[]>) | undefined
+    // Typed loosely because FeatureExtractionPipeline is a callable class not a plain function
+    let pipeline: ((texts: string[], opts?: Record<string, unknown>) => Promise<Array<{ data: Float32Array }>>) | undefined
 
     const getPipeline = () =>
       Effect.tryPromise({
@@ -51,11 +52,11 @@ export const layer = Layer.effect(
           env.allowLocalModels = true
 
           const p = await makePipeline("feature-extraction", MODEL_ID, {
-            quantized: true,
+            dtype: "q8",
             progress_callback: undefined, // suppress progress logs
           })
-          pipeline = p as typeof pipeline
-          return p as typeof pipeline
+          pipeline = p as unknown as typeof pipeline
+          return pipeline!
         },
         catch: (e) => new Error(`Failed to load embedder: ${e}`),
       })
@@ -66,13 +67,13 @@ export const layer = Layer.effect(
           const p = yield* getPipeline()
           return yield* Effect.tryPromise({
             try: async () => {
-              const outputs = await p!(texts, { pooling: "mean", normalize: true })
-              return outputs.map((o) => o.data as Float32Array)
+              const outputs = await p(texts, { pooling: "mean", normalize: true })
+              return outputs.map((o) => o.data)
             },
             catch: (e) => new Error(`Embedding failed: ${e}`),
           })
         }),
-      )
+      ).pipe(Effect.orDie)
 
     const embedOne = (text: string) =>
       embed([text]).pipe(Effect.map((results) => results[0]))
@@ -82,4 +83,4 @@ export const layer = Layer.effect(
 )
 
 export const defaultLayer = layer
-export const node = LayerNode.make(layer, [])
+export const node = LayerNode.make(layer, [Global.node])

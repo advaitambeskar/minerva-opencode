@@ -97,7 +97,7 @@ export const layer = Layer.effect(
             return info
           },
           catch: (e) => new Error(`WorktreeManager.create failed: ${e}`),
-        }),
+        }).pipe(Effect.orDie),
       )
 
     const remove = (worktreeId: string) =>
@@ -112,7 +112,7 @@ export const layer = Layer.effect(
             ctx.worktrees.delete(worktreeId)
           },
           catch: (e) => new Error(`WorktreeManager.remove failed: ${e}`),
-        }),
+        }).pipe(Effect.orDie),
       )
 
     const list = () =>
@@ -129,8 +129,8 @@ export const layer = Layer.effect(
             const result = await git(["diff", "HEAD", info.branchName, "--stat"], ctx.projectDir)
             return result.stdout
           },
-          catch: () => "",
-        }),
+          catch: (e) => new Error(String(e)),
+        }).pipe(Effect.catch(() => Effect.succeed(""))),
       )
 
     const apply = (worktreeId: string) =>
@@ -138,14 +138,14 @@ export const layer = Layer.effect(
         Effect.tryPromise({
           try: async () => {
             const info = ctx.worktrees.get(worktreeId)
-            if (!info) return { success: false, output: "Worktree not found" }
+            if (!info) return { success: false as const, output: "Worktree not found" }
 
             // Get the commit(s) to cherry-pick
             const log = await git(["log", "--oneline", `HEAD..${info.branchName}`], ctx.projectDir)
             const commits = log.stdout.trim().split("\n").filter(Boolean).reverse()
 
             if (commits.length === 0) {
-              return { success: true, output: "No new commits to apply" }
+              return { success: true as const, output: "No new commits to apply" }
             }
 
             // Cherry-pick each commit
@@ -155,14 +155,14 @@ export const layer = Layer.effect(
               if (result.code !== 0) {
                 // Abort cherry-pick on failure
                 await git(["cherry-pick", "--abort"], ctx.projectDir).catch(() => {})
-                return { success: false, output: result.stderr }
+                return { success: false as const, output: result.stderr }
               }
             }
 
-            return { success: true, output: `Applied ${commits.length} commit(s)` }
+            return { success: true as const, output: `Applied ${commits.length} commit(s)` }
           },
-          catch: (e) => ({ success: false, output: String(e) }),
-        }),
+          catch: (e) => ({ success: false as const, output: String(e) }),
+        }).pipe(Effect.catch(Effect.succeed)),
       )
 
     return Service.of({ create, remove, list, diff, apply })

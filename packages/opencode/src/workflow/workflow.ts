@@ -17,7 +17,6 @@ import { Context, Effect, Layer } from "effect"
 import { InstanceState } from "@/effect/instance-state"
 import type { InstanceContext } from "@/project/instance-context"
 import { AgentDatabase } from "@/agent-db/database"
-import { Config } from "@opencode-ai/core/config"
 import { Glob } from "@opencode-ai/core/util/glob"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { ulid } from "ulid"
@@ -196,12 +195,11 @@ export const layer = Layer.effect(
   Service,
   Effect.gen(function* () {
     const db = yield* AgentDatabase.Service
-    const config = yield* Config.Service
 
-    const instanceState = yield* InstanceState.make<{ projectId: string }>(
-      Effect.fn("Workflow.open")(function* (_ctx: InstanceContext) {
+    const instanceState = yield* InstanceState.make<{ projectId: string; projectDir: string }>(
+      Effect.fn("Workflow.open")(function* (ctx: InstanceContext) {
         const projectId = yield* db.projectId()
-        return yield* Effect.succeed({ projectId })
+        return yield* Effect.succeed({ projectId, projectDir: ctx.directory })
       }),
     )
 
@@ -211,25 +209,22 @@ export const layer = Layer.effect(
     // Discover workflow YAML files
     // -----------------------------------------------------------------------
     const discoverWorkflows = Effect.gen(function* () {
-      const entries = yield* config.entries()
-      const configDirs = entries.flatMap((e) => (e.type === "directory" ? [e.path] : []))
+      const ctx = yield* getCtx
+      const workflowDir = path.join(ctx.projectDir, ".agent", "workflows")
       const defs: WorkflowDef[] = []
 
-      for (const dir of configDirs) {
-        const workflowDir = path.join(dir, "workflows")
-        const files = yield* Effect.tryPromise({
-          try: () => Glob.scan("*.yaml", { cwd: workflowDir, absolute: true }),
-          catch: () => [],
-        }).pipe(Effect.orElseSucceed(() => [] as string[]))
+      const files = yield* Effect.tryPromise({
+        try: () => Glob.scan("*.yaml", { cwd: workflowDir, absolute: true }),
+        catch: () => [],
+      }).pipe(Effect.orElseSucceed(() => [] as string[]))
 
-        for (const f of files) {
-          try {
-            const text = readFileSync(f, "utf8")
-            const def = parseWorkflowYaml(text)
-            if (def) defs.push(def)
-          } catch {
-            // Skip unreadable files
-          }
+      for (const f of files) {
+        try {
+          const text = readFileSync(f, "utf8")
+          const def = parseWorkflowYaml(text)
+          if (def) defs.push(def)
+        } catch {
+          // Skip unreadable files
         }
       }
       return defs
@@ -339,4 +334,4 @@ export const layer = Layer.effect(
 )
 
 export const defaultLayer = layer
-export const node = LayerNode.make(layer, [])
+export const node = LayerNode.make(layer, [AgentDatabase.node])

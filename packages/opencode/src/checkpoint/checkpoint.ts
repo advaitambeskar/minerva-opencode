@@ -232,4 +232,4 @@ export const layer = Layer.effect(
 )
 
 export const defaultLayer = layer
-export const node = LayerNode.make(layer, [])
+export const node = LayerNode.make(layer, [Memory.node])
