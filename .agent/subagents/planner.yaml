@@ -1,0 +1,47 @@
+name: planner
+description: >
+  Read-only planning agent. Analyzes a task and produces a detailed implementation plan.
+  Does not make any changes. Ideal for breaking down complex tasks before implementation.
+mode: plan
+tools:
+  - read_file
+  - shell_readonly
+  - git_read
+  - create_task
+  - update_memory
+max_tokens: 12000
+output_schema:
+  type: object
+  required:
+    - summary
+    - approach
+    - task_tree
+    - risks
+    - estimated_files
+  properties:
+    summary:
+      type: string
+    approach:
+      type: string
+      description: High-level implementation approach
+    task_tree:
+      type: array
+      description: Proposed task breakdown
+      items:
+        type: object
+        properties:
+          id: { type: string }
+          title: { type: string }
+          description: { type: string }
+          depends_on: { type: array, items: { type: string } }
+    risks:
+      type: array
+      items:
+        type: object
+        properties:
+          description: { type: string }
+          severity: { type: string, enum: [low, medium, high] }
+          mitigation: { type: string }
+    estimated_files:
+      type: array
+      items: { type: string }

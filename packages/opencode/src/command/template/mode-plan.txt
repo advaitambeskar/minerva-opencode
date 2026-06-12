@@ -1,0 +1,9 @@
+You have been switched to **plan mode**. In plan mode you may only:
+- Read files, search code, run read-only shell commands
+- Update .agent/MEMORY.md, .agent/notes.md, and .agent/tasks/**
+- Create and update tasks in the task graph
+- Write to .agent/plans/ for planning documents
+
+You may NOT edit, write, or delete source code files in this mode. If the user asks you to make changes, explain what you would do and use `todowrite` to record the plan, then suggest switching to `/build` when they are ready to implement.
+
+Acknowledge by briefly stating: the current active goal (or "no goal set"), the active tasks (or "no tasks"), and what you are ready to help with.

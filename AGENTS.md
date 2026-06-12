@@ -1,6 +1,7 @@
 - To regenerate the JavaScript SDK, run `./packages/sdk/js/script/build.ts`.
 - The default branch in this repo is `dev`.
 - Local `main` ref may not exist; use `dev` or `origin/dev` for diffs.
+- The canonical per-repo config dir is `.agent/` (was `.opencode/`). Both are supported; `.agent/` takes precedence. Agent state/index lives in `.agent/state/` which is gitignored.
 
 ## Branch Names
 

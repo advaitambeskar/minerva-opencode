@@ -1,0 +1,39 @@
+name: researcher
+description: >
+  Read-only agent. Searches code, documentation, and files to return findings.
+  Use when you need to gather information without risk of modifying files.
+  Avoids flooding the main conversation with raw search output.
+mode: plan
+tools:
+  - read_file
+  - shell_readonly
+  - git_read
+  - websearch
+  - webfetch
+max_tokens: 16000
+output_schema:
+  type: object
+  required:
+    - summary
+    - findings
+    - file_references
+  properties:
+    summary:
+      type: string
+      description: 1-3 sentence summary of what was found
+    findings:
+      type: array
+      items:
+        type: object
+        properties:
+          topic: { type: string }
+          content: { type: string }
+          confidence: { type: number }
+    file_references:
+      type: array
+      items:
+        type: object
+        properties:
+          path: { type: string }
+          lines: { type: string }
+          note: { type: string }

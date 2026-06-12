@@ -1,0 +1,43 @@
+name: tester
+description: >
+  Can run tests but cannot edit source files. Executes test suites and reports
+  results. Use after implementation to verify correctness.
+mode: plan
+tools:
+  - read_file
+  - shell_readonly
+  - git_read
+max_tokens: 8000
+output_schema:
+  type: object
+  required:
+    - summary
+    - tests_run
+    - passed
+    - failed
+    - coverage_summary
+  properties:
+    summary:
+      type: string
+    tests_run:
+      type: array
+      items:
+        type: object
+        properties:
+          command: { type: string }
+          exit_code: { type: number }
+          output_summary: { type: string }
+    passed:
+      type: integer
+    failed:
+      type: integer
+    coverage_summary:
+      type: string
+    failures:
+      type: array
+      items:
+        type: object
+        properties:
+          test_name: { type: string }
+          error: { type: string }
+          file: { type: string }

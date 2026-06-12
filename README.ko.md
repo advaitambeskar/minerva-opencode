@@ -1,20 +1,8 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">오픈 소스 AI 코딩 에이전트.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# Minerva Code
 
-<p align="center">
+**메모리를 중심에 둔 AI 코딩 에이전트. subagent, goal, workflow를 함께 제공합니다.**
+
+<p>
   <a href="README.md">English</a> |
   <a href="README.zh.md">简体中文</a> |
   <a href="README.zht.md">繁體中文</a> |
@@ -39,91 +27,159 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+Minerva Code는 [OpenCode](https://github.com/anomalyco/opencode)에서 fork되었으며 OpenCode 프로젝트와 제휴되어 있지 않습니다.
 
 ---
 
-### 설치
+## Minerva Code란?
+
+Minerva Code는 프로젝트를 이해하는 코딩 에이전트입니다. OpenCode의 빠른 터미널 workflow를 유지하면서 durable memory, 명시적인 goal, 재개 가능한 checkpoint, semantic code search, task graph, 전문 subagent, multi-step workflow를 추가합니다.
+
+목표는 단순히 한 번의 prompt에 답하는 것이 아닙니다. Minerva Code는 실제 엔지니어링 프로젝트 안에서 방향을 잃지 않도록 설계되었습니다. 결정을 기억하고, 긴 세션 이후 context를 재구성하고, 일을 task로 나누고, 집중된 agent에게 위임하며, 다음 세션이 이전 중단 지점에서 이어갈 수 있도록 충분한 상태를 보존합니다.
+
+## 설치
+
+Minerva Code는 현재 source에서 개발합니다. rebrand가 진행 중이므로 published package 이름과 일부 내부 binary에는 아직 `opencode`가 포함될 수 있습니다.
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# 패키지 매니저
-npm i -g opencode-ai@latest        # bun/pnpm/yarn 도 가능
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS 및 Linux (권장, 항상 최신)
-brew install opencode              # macOS 및 Linux (공식 brew formula, 업데이트 빈도 낮음)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # 어떤 OS든
-nix run nixpkgs#opencode           # 또는 github:anomalyco/opencode 로 최신 dev 브랜치
+git clone https://github.com/advaitambeskar/minerva-opencode.git
+cd minerva-opencode
+bun install
+bun dev
 ```
 
-> [!TIP]
-> 설치 전에 0.1.x 보다 오래된 버전을 제거하세요.
-
-### 데스크톱 앱 (BETA)
-
-OpenCode 는 데스크톱 앱으로도 제공됩니다. [releases page](https://github.com/anomalyco/opencode/releases) 에서 직접 다운로드하거나 [opencode.ai/download](https://opencode.ai/download) 를 이용하세요.
-
-| 플랫폼                | 다운로드                           |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, 또는 AppImage      |
+유용한 개발 명령:
 
 ```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
+bun dev          # run the CLI/TUI from packages/opencode
+bun dev:web      # run the web app
+bun dev:desktop  # run the desktop app
+bun lint         # run oxlint
 ```
 
-#### 설치 디렉터리
+테스트는 package 단위입니다. repository root가 아니라 관련 package 디렉터리에서 실행하세요.
 
-설치 스크립트는 설치 경로를 다음 우선순위로 결정합니다.
+## 모드
 
-1. `$OPENCODE_INSTALL_DIR` - 사용자 지정 설치 디렉터리
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification 준수 경로
-3. `$HOME/bin` - 표준 사용자 바이너리 디렉터리 (존재하거나 생성 가능할 경우)
-4. `$HOME/.opencode/bin` - 기본 폴백
+Minerva Code에는 `Tab`으로 전환할 수 있는 세 가지 built-in mode가 있습니다.
+
+| 모드 | 목적 |
+| --- | --- |
+| `build` | 파일 편집, 명령 실행, 변경 구현을 위한 기본 full-access 개발 모드입니다. |
+| `plan` | 코드베이스 탐색, 변경 설계, 편집 전 tradeoff 검토를 위한 read-only 분석 모드입니다. |
+| `compose` | 전문 subagent를 통해 multi-step pipeline을 실행하는 workflow orchestration 모드입니다. |
+
+## Subagents
+
+Subagent는 특정 역할에 집중한 agent profile이며, 어떤 메시지에서든 `@name`으로 호출할 수 있습니다. `.agent/subagents/` 아래 YAML 파일로 정의되고 프로젝트별로 확장할 수 있습니다.
+
+| Subagent | 설명 |
+| --- | --- |
+| `@general` | 더 좁은 역할에 맞지 않는 복잡한 검색과 multi-step task를 처리합니다. |
+| `@researcher` | read-only 코드 및 문서 탐색을 수행합니다. |
+| `@planner` | 작업을 요구사항, task, 구현 계획으로 분해합니다. |
+| `@builder` | main checkout을 깨끗하게 유지하기 위해 격리된 git worktree에서 기능이나 수정 사항을 구현합니다. |
+| `@reviewer` | patch의 정확성, regression, 빠진 테스트를 리뷰합니다. |
+| `@debugger` | 실패를 재현하고 가능한 원인을 좁힙니다. |
+| `@tester` | targeted test를 실행하고 검증 evidence를 보고합니다. |
+| `@memory-writer` | durable project learning을 추출해 memory에 기록합니다. |
+| `@skill-writer` | 반복 workflow를 재사용 가능한 project skill로 전환합니다. |
+
+`@builder` 같은 write-capable subagent는 격리 worktree에서 작업하도록 설계되었습니다. read-only subagent는 더 빠른 탐색을 위해 병렬로 실행할 수 있습니다.
+
+## Memory
+
+Minerva Code는 durable project knowledge를 `.agent/MEMORY.md`에 보관합니다. 이 파일은 architecture decision, local convention, 중요한 command, integration note, 세션을 넘어 보존해야 할 known pitfall을 기록하기 위한 곳입니다.
+
+Memory는 단순한 문서가 아닙니다. local agent database에 index되고 full-text search가 가능하며, 세션 실행 시 compact memory card로 system context에 다시 주입됩니다.
+
+주요 명령:
+
+| 명령 | 목적 |
+| --- | --- |
+| `/memory` | project memory item을 나열하거나 검색합니다. |
+| `/dream` | 유용한 session learning을 long-term memory로 승격합니다. |
+| `/distill` | 반복 pattern을 감지하고 재사용 가능한 skill 또는 workflow를 제안합니다. |
+
+실수로 credential이 durable project knowledge에 남지 않도록 memory write 전에 secret redaction을 수행합니다.
+
+## Virtual Long Context
+
+Minerva Code는 unlimited context를 주장하지 않습니다. 대신 local source에서 project state의 중요한 부분을 재구성해 virtual long context를 유지합니다.
+
+| Source | 역할 |
+| --- | --- |
+| `.agent/MEMORY.md` | durable fact와 convention. |
+| `.agent/checkpoint.md` | 긴 작업이나 중단된 작업을 위한 재개 가능한 session state. |
+| Semantic code index | FTS5와 embedding 기반 source chunk retrieval. |
+| Task graph | multi-step work를 위한 durable task state. |
+| System context registry | provider-turn boundary에서 주입되는 budgeted context cards. |
+
+Context 사용량이 커지면 Minerva Code는 checkpoint를 작성하고, raw conversation에만 의존하지 않고 이러한 source에서 working context를 재구성할 수 있습니다.
+
+## Task Graph
+
+Task graph는 status, parent-child relationship, dependency, evidence를 가진 durable task로 작업을 기록합니다. local agent database에 저장되므로 planning과 execution은 restart 이후에도 유지됩니다.
+
+`/task`로 관리합니다:
 
 ```bash
-# 예시
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+/task create
+/task split
+/task start
+/task done
+/task tree
 ```
 
-### Agents
+일반 checklist보다 더 많은 구조가 필요하지만 agent session 가까이에 남아 있어야 하는 feature 작업에 유용합니다.
 
-OpenCode 에는 내장 에이전트 2개가 있으며 `Tab` 키로 전환할 수 있습니다.
+## Workflows
 
-- **build** - 기본값, 개발 작업을 위한 전체 권한 에이전트
-- **plan** - 분석 및 코드 탐색을 위한 읽기 전용 에이전트
-  - 기본적으로 파일 편집을 거부
-  - bash 명령 실행 전에 권한을 요청
-  - 낯선 코드베이스를 탐색하거나 변경을 계획할 때 적합
+Workflow는 `.agent/workflows/`에 저장되는 YAML-defined pipeline입니다. Minerva Code는 이를 통해 전문 agent로 구조화된 step sequence를 실행합니다.
 
-또한 복잡한 검색과 여러 단계 작업을 위한 **general** 서브 에이전트가 포함되어 있습니다.
-내부적으로 사용되며, 메시지에서 `@general` 로 호출할 수 있습니다.
+Built-in workflow 명령:
 
-[agents](https://opencode.ai/docs/agents) 에 대해 더 알아보세요.
+```bash
+/compose feature
+/compose tdd
+/compose debug
+/compose review
+```
 
-### 문서
+Feature workflow는 spec 분석, task tree 분해, implementation plan 작성, isolated builder 실행, test 실행, patch review, goal 만족 여부 검증까지 수행할 수 있습니다. Workflow run과 step은 persisted되므로 중단된 작업을 검사하거나 재개할 수 있습니다.
 
-OpenCode 설정에 대한 자세한 내용은 [**문서**](https://opencode.ai/docs) 를 참고하세요.
+## Commands
 
-### 기여하기
+Minerva Code 안에서 `/`를 입력하면 command를 확인할 수 있습니다. 중요한 command:
 
-OpenCode 에 기여하고 싶다면, Pull Request 를 제출하기 전에 [contributing docs](./CONTRIBUTING.md) 를 읽어주세요.
+| 명령 | 목적 |
+| --- | --- |
+| `/goal` | active stopping condition을 설정하거나 확인합니다. |
+| `/task` | durable task graph를 관리합니다. |
+| `/checkpoint` | 재개 가능한 session snapshot을 `.agent/checkpoint.md`에 저장합니다. |
+| `/compose` | `feature`, `tdd`, `debug`, `review` 같은 workflow를 실행합니다. |
+| `/voice` | `on`, `off`, `push-to-talk` 같은 voice input mode를 전환합니다. |
+| `/memory` | project memory를 나열, 검색, 삭제합니다. |
+| `/dream` | session learning을 durable memory로 승격합니다. |
+| `/distill` | 반복 행동에서 재사용 가능한 skill 또는 workflow를 추출합니다. |
 
-### OpenCode 기반으로 만들기
+## `.agent/` Project Brain
 
-OpenCode 와 관련된 프로젝트를 진행하면서 이름에 "opencode"(예: "opencode-dashboard" 또는 "opencode-mobile") 를 포함한다면, README 에 해당 프로젝트가 OpenCode 팀이 만든 것이 아니며 어떤 방식으로도 우리와 제휴되어 있지 않다는 점을 명시해 주세요.
+`.agent/`는 project별 canonical configuration 및 state directory입니다. `.opencode/`는 deprecated fallback으로 여전히 인식될 수 있지만, 새로운 Minerva Code 프로젝트는 `.agent/`를 사용해야 합니다.
 
----
+중요 경로:
 
-**커뮤니티에 참여하기** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+| 경로 | 목적 |
+| --- | --- |
+| `.agent/MEMORY.md` | durable project memory. |
+| `.agent/notes.md` | 임시 scratchpad notes. |
+| `.agent/goal.md` | active stopping condition. |
+| `.agent/checkpoint.md` | 최신 재개 가능한 session checkpoint. |
+| `.agent/subagents/` | project-defined subagent profiles. |
+| `.agent/workflows/` | `/compose`를 위한 workflow definitions. |
+| `.agent/skills/` | reusable project skills. |
+| `.agent/state/` | local state와 index; gitignored 상태로 유지해야 합니다. |
+
+## 기여
+
+기여하려면 pull request를 열기 전에 [CONTRIBUTING.md](./CONTRIBUTING.md)를 읽어주세요. Minerva Code는 fork이므로 변경 사항이 Minerva layer, upstream-compatible OpenCode runtime, 또는 둘 사이의 compatibility boundary 중 어디에 속하는지 명확히 해주세요.

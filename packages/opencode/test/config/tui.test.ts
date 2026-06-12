@@ -82,7 +82,7 @@ it.instance("keeps server and tui plugin merge semantics aligned", () =>
     Effect.gen(function* () {
       const fs = yield* FSUtil.Service
       const test = yield* TestInstance
-      const local = path.join(test.directory, ".opencode")
+      const local = path.join(test.directory, ".agent")
       yield* fs.makeDirectory(local, { recursive: true })
 
       yield* fs.writeJson(path.join(Global.Path.config, "opencode.json"), {
@@ -715,18 +715,38 @@ it.instance("applies file substitutions when first identical token is in a comme
   ),
 )
 
-it.instance("loads .opencode/tui.json", () =>
+it.instance("loads .agent/tui.json", () =>
   withCleanState(
     Effect.gen(function* () {
       const fs = yield* FSUtil.Service
       const test = yield* TestInstance
       yield* fs.writeWithDirs(
-        path.join(test.directory, ".opencode", "tui.json"),
+        path.join(test.directory, ".agent", "tui.json"),
         JSON.stringify({ diff_style: "stacked" }, null, 2),
       )
 
       const config = yield* getTuiConfig(test.directory)
       expect(config.diff_style).toBe("stacked")
+    }),
+  ),
+)
+
+it.instance(".agent/tui.json takes precedence over .opencode/tui.json", () =>
+  withCleanState(
+    Effect.gen(function* () {
+      const fs = yield* FSUtil.Service
+      const test = yield* TestInstance
+      yield* fs.writeWithDirs(
+        path.join(test.directory, ".agent", "tui.json"),
+        JSON.stringify({ theme: "agent-wins" }, null, 2),
+      )
+      yield* fs.writeWithDirs(
+        path.join(test.directory, ".opencode", "tui.json"),
+        JSON.stringify({ theme: "opencode-loses" }, null, 2),
+      )
+
+      const config = yield* getTuiConfig(test.directory)
+      expect(config.theme).toBe("agent-wins")
     }),
   ),
 )

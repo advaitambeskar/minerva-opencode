@@ -1,20 +1,8 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">Trợ lý lập trình AI mã nguồn mở.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# Minerva Code
 
-<p align="center">
+**Một AI coding agent ưu tiên bộ nhớ, với subagents, goals và workflows.**
+
+<p>
   <a href="README.md">English</a> |
   <a href="README.zh.md">简体中文</a> |
   <a href="README.zht.md">繁體中文</a> |
@@ -39,91 +27,159 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+Minerva Code là một fork của [OpenCode](https://github.com/anomalyco/opencode) và không liên kết với dự án OpenCode.
 
 ---
 
-### Cài đặt
+## Minerva Code là gì?
+
+Minerva Code là một coding agent hiểu ngữ cảnh dự án. Nó giữ workflow terminal nhanh của OpenCode, rồi bổ sung bộ nhớ bền vững, goals rõ ràng, checkpoints có thể resume, tìm kiếm mã nguồn theo ngữ nghĩa, task graph, subagents chuyên biệt và workflows nhiều bước.
+
+Mục tiêu không chỉ là trả lời một prompt. Minerva Code được thiết kế để giữ định hướng trong một dự án kỹ thuật thật: nhớ các quyết định, tái dựng context sau các session dài, chia việc thành tasks, ủy quyền cho agents tập trung và lưu đủ state để session sau có thể tiếp tục từ nơi session trước dừng lại.
+
+## Cài đặt
+
+Minerva Code hiện được phát triển từ source. Tên package đã xuất bản và một số binary nội bộ có thể vẫn chứa `opencode` trong khi quá trình rebrand đang diễn ra.
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# Các trình quản lý gói (Package managers)
-npm i -g opencode-ai@latest        # hoặc bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS và Linux (khuyên dùng, luôn cập nhật)
-brew install opencode              # macOS và Linux (công thức brew chính thức, ít cập nhật hơn)
-sudo pacman -S opencode            # Arch Linux (Bản ổn định)
-paru -S opencode-bin               # Arch Linux (Bản mới nhất từ AUR)
-mise use -g opencode               # Mọi hệ điều hành
-nix run nixpkgs#opencode           # hoặc github:anomalyco/opencode cho nhánh dev mới nhất
+git clone https://github.com/advaitambeskar/minerva-opencode.git
+cd minerva-opencode
+bun install
+bun dev
 ```
 
-> [!TIP]
-> Hãy xóa các phiên bản cũ hơn 0.1.x trước khi cài đặt.
-
-### Ứng dụng Desktop (BETA)
-
-OpenCode cũng có sẵn dưới dạng ứng dụng desktop. Tải trực tiếp từ [trang releases](https://github.com/anomalyco/opencode/releases) hoặc [opencode.ai/download](https://opencode.ai/download).
-
-| Nền tảng              | Tải xuống                          |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, hoặc AppImage      |
+Các lệnh phát triển hữu ích:
 
 ```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
+bun dev          # run the CLI/TUI from packages/opencode
+bun dev:web      # run the web app
+bun dev:desktop  # run the desktop app
+bun lint         # run oxlint
 ```
 
-#### Thư mục cài đặt
+Tests được chạy theo package. Hãy chạy từ thư mục package liên quan, không chạy từ root của repository.
 
-Tập lệnh cài đặt tuân theo thứ tự ưu tiên sau cho đường dẫn cài đặt:
+## Modes
 
-1. `$OPENCODE_INSTALL_DIR` - Thư mục cài đặt tùy chỉnh
-2. `$XDG_BIN_DIR` - Đường dẫn tuân thủ XDG Base Directory Specification
-3. `$HOME/bin` - Thư mục nhị phân tiêu chuẩn của người dùng (nếu tồn tại hoặc có thể tạo)
-4. `$HOME/.opencode/bin` - Mặc định dự phòng
+Minerva Code có ba mode tích hợp có thể chuyển bằng `Tab`.
+
+| Mode | Mục đích |
+| --- | --- |
+| `build` | Mode phát triển mặc định với toàn quyền để sửa file, chạy lệnh và implement thay đổi. |
+| `plan` | Mode phân tích read-only để khám phá codebase, thiết kế thay đổi và xem xét tradeoffs trước khi chỉnh sửa. |
+| `compose` | Mode workflow orchestration để chạy pipeline nhiều bước qua các subagents chuyên biệt. |
+
+## Subagents
+
+Subagents là các agent profiles tập trung vào vai trò cụ thể, có thể gọi bằng `@name` trong bất kỳ tin nhắn nào. Chúng được định nghĩa bằng YAML files trong `.agent/subagents/` và có thể mở rộng theo từng project.
+
+| Subagent | Mô tả |
+| --- | --- |
+| `@general` | Xử lý tìm kiếm phức tạp và tasks nhiều bước không phù hợp với một vai trò hẹp hơn. |
+| `@researcher` | Khám phá code và documentation ở chế độ read-only. |
+| `@planner` | Chia việc thành requirements, tasks và implementation plans. |
+| `@builder` | Implement features hoặc fixes trong một git worktree biệt lập để giữ checkout chính sạch. |
+| `@reviewer` | Review patches về correctness, regressions và missing tests. |
+| `@debugger` | Tái hiện failures và thu hẹp nguyên nhân có khả năng. |
+| `@tester` | Chạy targeted tests và báo cáo verification evidence. |
+| `@memory-writer` | Trích xuất project learnings bền vững và ghi vào memory. |
+| `@skill-writer` | Biến workflows lặp lại thành reusable project skills. |
+
+Các subagents có quyền ghi như `@builder` được thiết kế để làm việc trong worktrees biệt lập. Subagents read-only có thể chạy song song để khám phá nhanh hơn.
+
+## Memory
+
+Minerva Code giữ project knowledge bền vững trong `.agent/MEMORY.md`. File này dành cho architecture decisions, local conventions, important commands, integration notes và known pitfalls cần tồn tại qua nhiều chat sessions.
+
+Memory không chỉ là một document. Nó được index vào local agent database, có thể tìm kiếm bằng full-text search và được inject lại vào system context như một memory card gọn khi session chạy.
+
+Các lệnh chính:
+
+| Command | Mục đích |
+| --- | --- |
+| `/memory` | Liệt kê hoặc tìm kiếm project memory items. |
+| `/dream` | Đưa những session learnings hữu ích vào long-term memory. |
+| `/distill` | Phát hiện repeated patterns và đề xuất reusable skills hoặc workflows. |
+
+Secrets được redact trước khi ghi memory để credentials vô tình không bị lưu trong project knowledge bền vững.
+
+## Virtual Long Context
+
+Minerva Code không tuyên bố có unlimited context. Nó duy trì virtual long context bằng cách tái dựng các phần quan trọng của project state từ nguồn cục bộ:
+
+| Source | Vai trò |
+| --- | --- |
+| `.agent/MEMORY.md` | Durable facts và conventions. |
+| `.agent/checkpoint.md` | Resumable session state cho công việc dài hoặc bị ngắt quãng. |
+| Semantic code index | Retrieval trên source chunks bằng FTS5 và embeddings. |
+| Task graph | Durable task state cho multi-step work. |
+| System context registry | Budgeted context cards được inject tại provider-turn boundaries. |
+
+Khi context usage tăng cao, Minerva Code có thể ghi checkpoint và rebuild working context từ các nguồn này thay vì chỉ dựa vào raw conversation.
+
+## Task Graph
+
+Task graph ghi lại công việc dưới dạng durable tasks với statuses, parent-child relationships, dependencies và evidence. Nó được lưu trong local agent database để planning và execution vẫn tồn tại sau restart.
+
+Quản lý bằng `/task`:
 
 ```bash
-# Ví dụ
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+/task create
+/task split
+/task start
+/task done
+/task tree
 ```
 
-### Agents (Đại diện)
+Điều này hữu ích khi một feature cần nhiều cấu trúc hơn flat checklist nhưng vẫn nên ở gần agent session.
 
-OpenCode bao gồm hai agent được tích hợp sẵn mà bạn có thể chuyển đổi bằng phím `Tab`.
+## Workflows
 
-- **build** - Agent mặc định, có toàn quyền truy cập cho công việc lập trình
-- **plan** - Agent chỉ đọc dùng để phân tích và khám phá mã nguồn
-  - Mặc định từ chối việc chỉnh sửa tệp
-  - Hỏi quyền trước khi chạy các lệnh bash
-  - Lý tưởng để khám phá các codebase lạ hoặc lên kế hoạch thay đổi
+Workflows là YAML-defined pipelines được lưu trong `.agent/workflows/`. Chúng cho phép Minerva Code chạy một chuỗi steps có cấu trúc thông qua specialized agents.
 
-Ngoài ra còn có một subagent **general** dùng cho các tìm kiếm phức tạp và tác vụ nhiều bước.
-Agent này được sử dụng nội bộ và có thể gọi bằng cách dùng `@general` trong tin nhắn.
+Built-in workflow commands:
 
-Tìm hiểu thêm về [agents](https://opencode.ai/docs/agents).
+```bash
+/compose feature
+/compose tdd
+/compose debug
+/compose review
+```
 
-### Tài liệu
+Một feature workflow có thể phân tích spec, chia nó thành task tree, tạo implementation plan, chạy isolated builder, execute tests, review patch và verify goal đã thỏa mãn chưa. Workflow runs và steps được persisted nên interrupted work có thể được inspect hoặc resume.
 
-Để biết thêm thông tin về cách cấu hình OpenCode, [**hãy truy cập tài liệu của chúng tôi**](https://opencode.ai/docs).
+## Commands
 
-### Đóng góp
+Gõ `/` trong Minerva Code để khám phá commands. Các command quan trọng:
 
-Nếu bạn muốn đóng góp cho OpenCode, vui lòng đọc [tài liệu hướng dẫn đóng góp](./CONTRIBUTING.md) trước khi gửi pull request.
+| Command | Mục đích |
+| --- | --- |
+| `/goal` | Set hoặc review active stopping condition. |
+| `/task` | Manage durable task graph. |
+| `/checkpoint` | Save resumable session snapshot vào `.agent/checkpoint.md`. |
+| `/compose` | Run workflows như `feature`, `tdd`, `debug` và `review`. |
+| `/voice` | Toggle voice input modes như `on`, `off` và `push-to-talk`. |
+| `/memory` | List, search hoặc forget project memory. |
+| `/dream` | Promote session learnings vào durable memory. |
+| `/distill` | Extract reusable skills hoặc workflows từ repeated behavior. |
 
-### Xây dựng trên nền tảng OpenCode
+## Project Brain `.agent/`
 
-Nếu bạn đang làm việc trên một dự án liên quan đến OpenCode và sử dụng "opencode" như một phần của tên dự án, ví dụ "opencode-dashboard" hoặc "opencode-mobile", vui lòng thêm một ghi chú vào README của bạn để làm rõ rằng dự án đó không được xây dựng bởi đội ngũ OpenCode và không liên kết với chúng tôi dưới bất kỳ hình thức nào.
+`.agent/` là canonical per-project configuration và state directory. `.opencode/` vẫn có thể được nhận diện như deprecated fallback, nhưng các project Minerva Code mới nên dùng `.agent/`.
 
----
+Các path quan trọng:
 
-**Tham gia cộng đồng của chúng tôi** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+| Path | Mục đích |
+| --- | --- |
+| `.agent/MEMORY.md` | Durable project memory. |
+| `.agent/notes.md` | Temporary scratchpad notes. |
+| `.agent/goal.md` | Active stopping condition. |
+| `.agent/checkpoint.md` | Latest resumable session checkpoint. |
+| `.agent/subagents/` | Project-defined subagent profiles. |
+| `.agent/workflows/` | Workflow definitions cho `/compose`. |
+| `.agent/skills/` | Reusable project skills. |
+| `.agent/state/` | Local state và indexes; nên giữ gitignored. |
+
+## Đóng góp
+
+Nếu bạn muốn đóng góp, hãy đọc [CONTRIBUTING.md](./CONTRIBUTING.md) trước khi mở pull request. Vì Minerva Code là một fork, hãy làm rõ thay đổi thuộc về Minerva layer, upstream-compatible OpenCode runtime hay compatibility boundary giữa hai phần đó.

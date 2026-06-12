@@ -1,0 +1,10 @@
+Search project memory for information relevant to: $ARGUMENTS
+
+Search the following memory sources in order:
+1. .agent/MEMORY.md - full-text search all sections
+2. .agent/notes.md - scratchpad content
+3. .agent/tasks/ - task progress files
+
+Return matching sections with their full text. Group results by memory kind (MEMORY.md section, notes, task progress). Show the source file path for each result.
+
+If nothing is found, say so clearly and suggest what to add to memory.

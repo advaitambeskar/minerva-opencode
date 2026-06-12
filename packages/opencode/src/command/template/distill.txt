@@ -1,0 +1,70 @@
+Detect repeated patterns in recent sessions and propose reusable skills, workflows, or commands.
+
+This is the /distill command. It analyzes recent work to identify patterns worth automating.
+ALL proposals require user approval before installation. Never auto-install anything.
+
+## Step 1: Survey recent sessions
+
+Read the last N sessions' event logs and task progress:
+1. Check `.agent/state/event-log.jsonl` for repeated command sequences
+2. Read `.agent/tasks/` for repeated task structures
+3. Check existing skills in `.agent/skills/` to avoid proposing duplicates
+4. Check existing workflows in `.agent/workflows/` for overlap
+5. Check existing commands in `.agent/command/` for overlap
+
+$ARGUMENTS (use as N sessions to look back, default: 10)
+
+## Step 2: Score pattern candidates
+
+For each pattern:
+
+```
+score =
+  0.30 * frequency (how many times it appeared)
+  + 0.25 * success_rate (fraction of times it worked)
+  + 0.20 * repeatability (same inputs → same outputs?)
+  + 0.15 * user_corrections_low (low = user rarely corrected it)
+  + 0.10 * time_saved_estimate (rough estimate in minutes)
+```
+
+**Only propose when ALL of these are true:**
+- Occurred at least 3 times
+- Success rate ≥ 70%
+- Required inputs are clearly identifiable
+- Generated artifact is reviewable (not one-off)
+- Commands are deterministic
+
+## Step 3: Generate proposals
+
+For each qualifying pattern, generate ONE of:
+
+**Skill proposal** (`.agent/skills/<name>/SKILL.md`):
+```markdown
+# Skill: <name>
+
+## When to use
+<precise trigger condition>
+
+## Inputs
+- <input name>: <description>
+
+## Steps
+1. <step>
+2. <step>
+...
+```
+
+**Workflow proposal** (`.agent/workflows/<name>.yaml`):
+Show the YAML structure with steps.
+
+**Command proposal** (`.agent/command/<name>.md`):
+Show the command template with `$ARGUMENTS`.
+
+## Step 4: Present for approval
+
+Show all proposals grouped by type. For each:
+1. Show the score breakdown
+2. Show the proposed file content
+3. Ask: "Install this? [y/n/edit]"
+
+Only write files that the user explicitly approves. Never silently create or modify skill/workflow/command files.

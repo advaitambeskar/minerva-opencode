@@ -1,20 +1,8 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">Açık kaynaklı yapay zeka kodlama asistanı.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# Minerva Code
 
-<p align="center">
+**Bellek öncelikli, subagent'lar, hedefler ve workflow'lar içeren bir AI kodlama ajanı.**
+
+<p>
   <a href="README.md">English</a> |
   <a href="README.zh.md">简体中文</a> |
   <a href="README.zht.md">繁體中文</a> |
@@ -39,91 +27,159 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+Minerva Code, [OpenCode](https://github.com/anomalyco/opencode) projesinden fork edilmiştir ve OpenCode projesiyle bağlantılı değildir.
 
 ---
 
-### Kurulum
+## Minerva Code nedir?
+
+Minerva Code, proje farkındalığı olan bir kodlama ajanıdır. OpenCode'un hızlı terminal workflow'unu korur; üzerine kalıcı bellek, açık hedefler, sürdürülebilir checkpoint'ler, semantik kod araması, task graph, özel subagent'lar ve çok adımlı workflow'lar ekler.
+
+Amaç yalnızca tek bir prompt'a cevap vermek değildir. Minerva Code gerçek bir mühendislik projesinde yönünü kaybetmemek için tasarlanmıştır: kararları hatırlar, uzun oturumlardan sonra context'i yeniden kurar, işi task'lara böler, odaklanmış agent'lara delege eder ve sonraki oturumların kaldığı yerden devam edebilmesi için yeterli state saklar.
+
+## Kurulum
+
+Minerva Code şu anda kaynak koddan geliştirilmektedir. Rebrand süreci devam ederken yayımlanmış paket adları ve bazı dahili binary'ler hâlâ `opencode` içerebilir.
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# Paket yöneticileri
-npm i -g opencode-ai@latest        # veya bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS ve Linux (önerilir, her zaman güncel)
-brew install opencode              # macOS ve Linux (resmi brew formülü, daha az güncellenir)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # Tüm işletim sistemleri
-nix run nixpkgs#opencode           # veya en güncel geliştirme dalı için github:anomalyco/opencode
+git clone https://github.com/advaitambeskar/minerva-opencode.git
+cd minerva-opencode
+bun install
+bun dev
 ```
 
-> [!TIP]
-> Kurulumdan önce 0.1.x'ten eski sürümleri kaldırın.
-
-### Masaüstü Uygulaması (BETA)
-
-OpenCode ayrıca masaüstü uygulaması olarak da mevcuttur. Doğrudan [sürüm sayfasından](https://github.com/anomalyco/opencode/releases) veya [opencode.ai/download](https://opencode.ai/download) adresinden indirebilirsiniz.
-
-| Platform              | İndirme                            |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm` veya AppImage       |
+Yararlı geliştirme komutları:
 
 ```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
+bun dev          # run the CLI/TUI from packages/opencode
+bun dev:web      # run the web app
+bun dev:desktop  # run the desktop app
+bun lint         # run oxlint
 ```
 
-#### Kurulum Dizini (Installation Directory)
+Testler package kapsamındadır. Repository root'tan değil, ilgili package dizininden çalıştırın.
 
-Kurulum betiği (install script), kurulum yolu (installation path) için aşağıdaki öncelik sırasını takip eder:
+## Modlar
 
-1. `$OPENCODE_INSTALL_DIR` - Özel kurulum dizini
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification uyumlu yol
-3. `$HOME/bin` - Standart kullanıcı binary dizini (varsa veya oluşturulabiliyorsa)
-4. `$HOME/.opencode/bin` - Varsayılan yedek konum
+Minerva Code, `Tab` ile geçiş yapılabilen üç yerleşik mod içerir.
+
+| Mod | Amaç |
+| --- | --- |
+| `build` | Dosya düzenleme, komut çalıştırma ve değişiklik implement etme için varsayılan tam erişimli geliştirme modu. |
+| `plan` | Codebase keşfi, değişiklik tasarımı ve düzenleme öncesi tradeoff değerlendirmesi için read-only analiz modu. |
+| `compose` | Özel subagent'lar üzerinden çok adımlı pipeline'lar çalıştıran workflow orchestration modu. |
+
+## Subagent'lar
+
+Subagent'lar, herhangi bir mesajda `@name` ile çağrılabilen odaklı agent profilleridir. `.agent/subagents/` altındaki YAML dosyalarıyla tanımlanır ve proje bazında genişletilebilir.
+
+| Subagent | Açıklama |
+| --- | --- |
+| `@general` | Daha dar bir role uymayan karmaşık aramalar ve çok adımlı görevleri yürütür. |
+| `@researcher` | Kod ve dokümantasyon üzerinde read-only keşif yapar. |
+| `@planner` | İşi gereksinimlere, task'lara ve implementasyon planlarına böler. |
+| `@builder` | Ana checkout temiz kalsın diye özellikleri veya fix'leri izole bir git worktree içinde implement eder. |
+| `@reviewer` | Patch'leri doğruluk, regresyonlar ve eksik testler açısından review eder. |
+| `@debugger` | Hataları yeniden üretir ve olası nedenleri daraltır. |
+| `@tester` | Hedefli testleri çalıştırır ve doğrulama evidence'ı raporlar. |
+| `@memory-writer` | Kalıcı proje öğrenimlerini çıkarır ve belleğe yazar. |
+| `@skill-writer` | Tekrarlanan workflow'ları yeniden kullanılabilir project skill'lere dönüştürür. |
+
+`@builder` gibi yazma yetkili subagent'lar izole worktree'lerde çalışacak şekilde tasarlanmıştır. Read-only subagent'lar daha hızlı keşif için paralel çalıştırılabilir.
+
+## Bellek
+
+Minerva Code kalıcı proje bilgisini `.agent/MEMORY.md` içinde tutar. Bu dosya mimari kararlar, yerel konvansiyonlar, önemli komutlar, entegrasyon notları ve tek bir chat oturumundan sonra da kalması gereken bilinen tuzaklar içindir.
+
+Bellek yalnızca bir belge değildir. Yerel agent database'e indexlenir, full-text search ile aranabilir ve oturumlar çalışırken kompakt bir memory card olarak system context'e yeniden enjekte edilir.
+
+Temel komutlar:
+
+| Komut | Amaç |
+| --- | --- |
+| `/memory` | Proje belleği öğelerini listelemek veya aramak. |
+| `/dream` | Faydalı session öğrenimlerini long-term memory'ye taşımak. |
+| `/distill` | Tekrarlanan pattern'leri tespit edip reusable skills veya workflows önermek. |
+
+Secrets, bellek yazımlarından önce redact edilir; böylece yanlışlıkla gelen credentials kalıcı proje bilgisine kaydedilmez.
+
+## Sanal uzun context
+
+Minerva Code sınırsız context iddiasında bulunmaz. Önemli proje state parçalarını yerel kaynaklardan yeniden kurarak sanal uzun context sağlar:
+
+| Kaynak | Rol |
+| --- | --- |
+| `.agent/MEMORY.md` | Kalıcı bilgiler ve konvansiyonlar. |
+| `.agent/checkpoint.md` | Uzun veya kesintiye uğramış işler için sürdürülebilir session state. |
+| Semantic code index | FTS5 ve embeddings ile source chunk retrieval. |
+| Task graph | Çok adımlı çalışma için kalıcı task state. |
+| System context registry | Provider-turn sınırlarında enjekte edilen bütçeli context cards. |
+
+Context kullanımı yükseldiğinde Minerva Code checkpoint yazabilir ve çalışma context'ini yalnızca ham konuşmaya dayanmak yerine bu kaynaklardan yeniden oluşturabilir.
+
+## Task Graph
+
+Task graph işi statü, parent-child relationships, dependencies ve evidence içeren kalıcı task'lar olarak kaydeder. Yerel agent database'de saklanır; böylece planlama ve yürütme restart'lardan sonra da korunur.
+
+`/task` ile yönetin:
 
 ```bash
-# Örnekler
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+/task create
+/task split
+/task start
+/task done
+/task tree
 ```
 
-### Ajanlar
+Bir feature düz bir checklist'ten daha fazla yapı gerektiriyor ama agent oturumuna yakın kalmalıysa faydalıdır.
 
-OpenCode, `Tab` tuşuyla aralarında geçiş yapabileceğiniz iki yerleşik (built-in) ajan içerir.
+## Workflow'lar
 
-- **build** - Varsayılan, geliştirme çalışmaları için tam erişimli ajan
-- **plan** - Analiz ve kod keşfi için salt okunur ajan
-  - Varsayılan olarak dosya düzenlemelerini reddeder
-  - Bash komutlarını çalıştırmadan önce izin ister
-  - Tanımadığınız kod tabanlarını keşfetmek veya değişiklikleri planlamak için ideal
+Workflow'lar `.agent/workflows/` içinde saklanan YAML-defined pipeline'lardır. Minerva Code'un özel agent'lar aracılığıyla yapılandırılmış bir step dizisi çalıştırmasını sağlar.
 
-Ayrıca, karmaşık aramalar ve çok adımlı görevler için bir **genel** alt ajan bulunmaktadır.
-Bu dahili olarak kullanılır ve mesajlarda `@general` ile çağrılabilir.
+Yerleşik workflow komutları:
 
-[Ajanlar](https://opencode.ai/docs/agents) hakkında daha fazla bilgi edinin.
+```bash
+/compose feature
+/compose tdd
+/compose debug
+/compose review
+```
 
-### Dokümantasyon
+Bir feature workflow'u spec analiz edebilir, task tree'ye bölebilir, implementasyon planı oluşturabilir, isolated builder çalıştırabilir, testleri koşturabilir, patch'i review edebilir ve goal'un karşılanıp karşılanmadığını doğrulayabilir. Workflow run'ları ve step'leri persist edilir; böylece kesilen işler incelenebilir veya sürdürülebilir.
 
-OpenCode'u nasıl yapılandıracağınız hakkında daha fazla bilgi için [**dokümantasyonumuza göz atın**](https://opencode.ai/docs).
+## Komutlar
 
-### Katkıda Bulunma
+Komutları görmek için Minerva Code içinde `/` yazın. Önemli komutlar:
 
-OpenCode'a katkıda bulunmak istiyorsanız, lütfen bir pull request göndermeden önce [katkıda bulunma dokümanlarımızı](./CONTRIBUTING.md) okuyun.
+| Komut | Amaç |
+| --- | --- |
+| `/goal` | Aktif durma koşulunu ayarlamak veya gözden geçirmek. |
+| `/task` | Kalıcı task graph'ı yönetmek. |
+| `/checkpoint` | Sürdürülebilir session snapshot'ını `.agent/checkpoint.md` içine kaydetmek. |
+| `/compose` | `feature`, `tdd`, `debug` ve `review` gibi workflow'ları çalıştırmak. |
+| `/voice` | `on`, `off` ve `push-to-talk` gibi voice input modlarını değiştirmek. |
+| `/memory` | Proje belleğini listelemek, aramak veya unutmak. |
+| `/dream` | Session öğrenimlerini kalıcı belleğe taşımak. |
+| `/distill` | Tekrarlanan davranışlardan reusable skills veya workflows çıkarmak. |
 
-### OpenCode Üzerine Geliştirme
+## `.agent/` Project Brain
 
-OpenCode ile ilgili bir proje üzerinde çalışıyorsanız ve projenizin adının bir parçası olarak "opencode" kullanıyorsanız (örneğin, "opencode-dashboard" veya "opencode-mobile"), lütfen README dosyanıza projenin OpenCode ekibi tarafından geliştirilmediğini ve bizimle hiçbir şekilde bağlantılı olmadığını belirten bir not ekleyin.
+`.agent/`, proje başına kanonik konfigürasyon ve state dizinidir. `.opencode/` hâlâ deprecated fallback olarak tanınabilir, ancak yeni Minerva Code projeleri `.agent/` kullanmalıdır.
 
----
+Önemli yollar:
 
-**Topluluğumuza katılın** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+| Yol | Amaç |
+| --- | --- |
+| `.agent/MEMORY.md` | Kalıcı proje belleği. |
+| `.agent/notes.md` | Geçici scratchpad notları. |
+| `.agent/goal.md` | Aktif durma koşulu. |
+| `.agent/checkpoint.md` | En son sürdürülebilir session checkpoint. |
+| `.agent/subagents/` | Proje tanımlı subagent profilleri. |
+| `.agent/workflows/` | `/compose` için workflow tanımları. |
+| `.agent/skills/` | Yeniden kullanılabilir project skills. |
+| `.agent/state/` | Yerel state ve index'ler; gitignored kalmalıdır. |
+
+## Katkı
+
+Katkı yapmak istiyorsanız pull request açmadan önce [CONTRIBUTING.md](./CONTRIBUTING.md) dosyasını okuyun. Minerva Code bir fork olduğu için değişikliklerin Minerva layer'a mı, upstream-compatible OpenCode runtime'a mı yoksa ikisi arasındaki compatibility boundary'ye mi ait olduğunu açıkça belirtin.

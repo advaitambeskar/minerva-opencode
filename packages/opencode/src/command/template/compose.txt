@@ -1,0 +1,50 @@
+Run a multi-step compose workflow that coordinates specialized subagents.
+
+$ARGUMENTS
+
+Parse the sub-command from the argument:
+
+/compose feature <spec>
+  Runs the compose-feature workflow:
+  1. planner analyzes spec and creates task tree
+  2. planner creates detailed implementation plan
+  3. builder implements the feature (requires approval)
+  4. tester runs tests
+  5. reviewer reviews the result
+  6. /stop evaluation checks goal satisfaction
+
+/compose tdd <spec>
+  Runs the compose-tdd workflow (test-driven development):
+  1. builder writes failing tests (requires approval)
+  2. tester verifies red state
+  3. builder implements to make tests pass (requires approval)
+  4. tester verifies green state
+  5. builder refactors (requires approval)
+  6. reviewer reviews
+
+/compose debug <failure>
+  Runs the compose-debug workflow:
+  1. debugger reproduces the failure
+  2. debugger localizes the bug
+  3. debugger identifies root cause
+  4. builder applies the fix (requires approval)
+  5. tester runs regression tests
+  6. reviewer reviews the fix
+
+/compose review <diff>
+  Runs the compose-review workflow:
+  1. reviewer checks correctness
+  2. researcher checks security
+  3. tester checks test coverage
+  4. builder suggests improvements (requires approval)
+
+/compose list
+  Shows available workflows and their current status.
+
+/compose status [run-id]
+  Shows status of running or recent workflow runs.
+
+/compose cancel [run-id]
+  Cancels a running workflow.
+
+Before starting a workflow, read .agent/goal.md and confirm with the user what the goal is. Set a goal if none exists.

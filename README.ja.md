@@ -1,20 +1,8 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">オープンソースのAIコーディングエージェント。</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# Minerva Code
 
-<p align="center">
+**メモリを中心に、サブエージェント、ゴール、ワークフローを備えた AI コーディングエージェント。**
+
+<p>
   <a href="README.md">English</a> |
   <a href="README.zh.md">简体中文</a> |
   <a href="README.zht.md">繁體中文</a> |
@@ -39,91 +27,159 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+Minerva Code は [OpenCode](https://github.com/anomalyco/opencode) から fork されたものであり、OpenCode プロジェクトとは提携していません。
 
 ---
 
-### インストール
+## Minerva Code とは？
+
+Minerva Code は、プロジェクトを理解するコーディングエージェントです。OpenCode の高速なターミナルワークフローを保ちながら、永続メモリ、明示的なゴール、再開可能な checkpoint、セマンティックコード検索、タスクグラフ、専門サブエージェント、複数ステップのワークフローを追加しています。
+
+目的は、単に 1 回のプロンプトに答えることではありません。Minerva Code は実際のエンジニアリングプロジェクトで方向感覚を保つために設計されています。判断を記憶し、長いセッション後にコンテキストを再構築し、作業をタスクへ分割し、専門エージェントへ委任し、次のセッションが前回の続きから始められるだけの状態を保存します。
+
+## インストール
+
+Minerva Code は現在、ソースから開発されています。リブランドが進行中のため、公開パッケージ名や一部の内部バイナリにはまだ `opencode` が含まれる場合があります。
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# パッケージマネージャー
-npm i -g opencode-ai@latest        # bun/pnpm/yarn でもOK
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS と Linux（推奨。常に最新）
-brew install opencode              # macOS と Linux（公式 brew formula。更新頻度は低め）
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # どのOSでも
-nix run nixpkgs#opencode           # または github:anomalyco/opencode で最新 dev ブランチ
+git clone https://github.com/advaitambeskar/minerva-opencode.git
+cd minerva-opencode
+bun install
+bun dev
 ```
 
-> [!TIP]
-> インストール前に 0.1.x より古いバージョンを削除してください。
-
-### デスクトップアプリ (BETA)
-
-OpenCode はデスクトップアプリとしても利用できます。[releases page](https://github.com/anomalyco/opencode/releases) から直接ダウンロードするか、[opencode.ai/download](https://opencode.ai/download) を利用してください。
-
-| プラットフォーム      | ダウンロード                       |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`、`.rpm`、または AppImage    |
+便利な開発コマンド:
 
 ```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
+bun dev          # run the CLI/TUI from packages/opencode
+bun dev:web      # run the web app
+bun dev:desktop  # run the desktop app
+bun lint         # run oxlint
 ```
 
-#### インストールディレクトリ
+テストは package 単位です。リポジトリルートではなく、対象 package のディレクトリから実行してください。
 
-インストールスクリプトは、インストール先パスを次の優先順位で決定します。
+## モード
 
-1. `$OPENCODE_INSTALL_DIR` - カスタムのインストールディレクトリ
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification に準拠したパス
-3. `$HOME/bin` - 標準のユーザー用バイナリディレクトリ（存在する場合、または作成できる場合）
-4. `$HOME/.opencode/bin` - デフォルトのフォールバック
+Minerva Code には `Tab` で切り替えられる 3 つの組み込みモードがあります。
+
+| モード | 目的 |
+| --- | --- |
+| `build` | ファイル編集、コマンド実行、変更実装のためのデフォルトのフルアクセス開発モード。 |
+| `plan` | コードベース探索、変更設計、編集前のトレードオフ検討のための読み取り専用分析モード。 |
+| `compose` | 専門サブエージェントを通じて複数ステップのパイプラインを実行するワークフロー編成モード。 |
+
+## サブエージェント
+
+サブエージェントは特定の役割に集中した agent profile で、任意のメッセージ内で `@name` として呼び出せます。これらは `.agent/subagents/` 配下の YAML ファイルで定義され、プロジェクトごとに拡張できます。
+
+| サブエージェント | 説明 |
+| --- | --- |
+| `@general` | より狭い役割に当てはまらない複雑な検索や複数ステップのタスクを処理します。 |
+| `@researcher` | 読み取り専用のコードおよびドキュメント探索を行います。 |
+| `@planner` | 作業を要件、タスク、実装計画へ分解します。 |
+| `@builder` | メイン checkout を clean に保つため、隔離された git worktree で機能や修正を実装します。 |
+| `@reviewer` | patch の正しさ、リグレッション、足りないテストをレビューします。 |
+| `@debugger` | 失敗を再現し、原因候補を絞り込みます。 |
+| `@tester` | 対象テストを実行し、検証 evidence を報告します。 |
+| `@memory-writer` | 永続化すべきプロジェクト学習を抽出してメモリへ書き込みます。 |
+| `@skill-writer` | 繰り返し発生するワークフローを再利用可能なプロジェクト skill に変換します。 |
+
+`@builder` のような書き込み可能なサブエージェントは、隔離 worktree で作業することを想定しています。読み取り専用サブエージェントは、探索を速くするために並列実行できます。
+
+## メモリ
+
+Minerva Code は永続的なプロジェクト知識を `.agent/MEMORY.md` に保存します。このファイルは、アーキテクチャ上の判断、ローカル規約、重要なコマンド、統合メモ、セッションを越えて残すべき既知の落とし穴を記録するためのものです。
+
+メモリは単なるドキュメントではありません。ローカル agent database に index され、全文検索でき、セッション実行時にはコンパクトな memory card として system context に再注入されます。
+
+主要コマンド:
+
+| コマンド | 目的 |
+| --- | --- |
+| `/memory` | プロジェクトメモリ項目を一覧または検索します。 |
+| `/dream` | 有用なセッション学習を長期メモリへ昇格します。 |
+| `/distill` | 繰り返しパターンを検出し、再利用可能な skill や workflow を提案します。 |
+
+誤って認証情報が永続的なプロジェクト知識に残らないよう、メモリ書き込み前に secret redaction が行われます。
+
+## 仮想ロングコンテキスト
+
+Minerva Code は無限コンテキストを主張しません。ローカルソースからプロジェクト状態の重要部分を再構築することで、仮想ロングコンテキストを維持します。
+
+| ソース | 役割 |
+| --- | --- |
+| `.agent/MEMORY.md` | 永続的な事実と規約。 |
+| `.agent/checkpoint.md` | 長い作業や中断された作業のための再開可能なセッション状態。 |
+| Semantic code index | FTS5 と embedding による source chunk retrieval。 |
+| Task graph | 複数ステップ作業の永続タスク状態。 |
+| System context registry | provider-turn 境界で注入される予算制限付き context cards。 |
+
+コンテキスト使用量が高くなると、Minerva Code は checkpoint を書き込み、元の会話だけに頼らずこれらのソースから作業コンテキストを再構築できます。
+
+## タスクグラフ
+
+タスクグラフは、状態、親子関係、依存関係、evidence を持つ永続タスクとして作業を記録します。ローカル agent database に保存されるため、計画と実行は再起動後も保持されます。
+
+`/task` で管理します:
 
 ```bash
-# 例
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+/task create
+/task split
+/task start
+/task done
+/task tree
 ```
 
-### Agents
+フラットな checklist よりも構造が必要だが、agent セッションの近くに保ちたい機能開発に役立ちます。
 
-OpenCode には組み込みの Agent が2つあり、`Tab` キーで切り替えられます。
+## ワークフロー
 
-- **build** - デフォルト。開発向けのフルアクセス Agent
-- **plan** - 分析とコード探索向けの読み取り専用 Agent
-  - デフォルトでファイル編集を拒否
-  - bash コマンド実行前に確認
-  - 未知のコードベース探索や変更計画に最適
+ワークフローは `.agent/workflows/` に保存される YAML 定義の pipeline です。Minerva Code はこれを使って、専門エージェントによる構造化されたステップ列を実行できます。
 
-また、複雑な検索やマルチステップのタスク向けに **general** サブ Agent も含まれています。
-内部的に使用されており、メッセージで `@general` と入力して呼び出せます。
+組み込みワークフローコマンド:
 
-[agents](https://opencode.ai/docs/agents) の詳細はこちら。
+```bash
+/compose feature
+/compose tdd
+/compose debug
+/compose review
+```
 
-### ドキュメント
+feature ワークフローは spec の分析、タスクツリーへの分解、実装計画の作成、隔離 builder の実行、テスト実行、patch レビュー、ゴール達成の検証まで行えます。workflow run と step は永続化されるため、中断された作業を確認または再開できます。
 
-OpenCode の設定については [**ドキュメント**](https://opencode.ai/docs) を参照してください。
+## コマンド
 
-### コントリビュート
+Minerva Code 内で `/` を入力するとコマンドを確認できます。重要なコマンド:
 
-OpenCode に貢献したい場合は、Pull Request を送る前に [contributing docs](./CONTRIBUTING.md) を読んでください。
+| コマンド | 目的 |
+| --- | --- |
+| `/goal` | 現在の停止条件を設定または確認します。 |
+| `/task` | 永続タスクグラフを管理します。 |
+| `/checkpoint` | 再開可能なセッション snapshot を `.agent/checkpoint.md` に保存します。 |
+| `/compose` | `feature`、`tdd`、`debug`、`review` などの workflow を実行します。 |
+| `/voice` | `on`、`off`、`push-to-talk` などの音声入力モードを切り替えます。 |
+| `/memory` | プロジェクトメモリを一覧、検索、または忘却します。 |
+| `/dream` | セッション学習を永続メモリへ昇格します。 |
+| `/distill` | 繰り返し行動から再利用可能な skill や workflow を抽出します。 |
 
-### OpenCode の上に構築する
+## `.agent/` プロジェクトブレイン
 
-OpenCode に関連するプロジェクトで、名前に "opencode"（例: "opencode-dashboard" や "opencode-mobile"）を含める場合は、そのプロジェクトが OpenCode チームによって作られたものではなく、いかなる形でも関係がないことを README に明記してください。
+`.agent/` はプロジェクトごとの標準設定および状態ディレクトリです。`.opencode/` は deprecated fallback として認識される場合がありますが、新しい Minerva Code プロジェクトでは `.agent/` を使うべきです。
 
----
+重要なパス:
 
-**コミュニティに参加** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+| パス | 目的 |
+| --- | --- |
+| `.agent/MEMORY.md` | 永続プロジェクトメモリ。 |
+| `.agent/notes.md` | 一時的な scratchpad notes。 |
+| `.agent/goal.md` | 現在の停止条件。 |
+| `.agent/checkpoint.md` | 最新の再開可能なセッション checkpoint。 |
+| `.agent/subagents/` | プロジェクト定義の subagent profiles。 |
+| `.agent/workflows/` | `/compose` 用の workflow definitions。 |
+| `.agent/skills/` | 再利用可能な project skills。 |
+| `.agent/state/` | ローカル状態と indexes。gitignored のままにしてください。 |
+
+## コントリビューション
+
+貢献したい場合は、pull request を開く前に [CONTRIBUTING.md](./CONTRIBUTING.md) を読んでください。Minerva Code は fork であるため、変更が Minerva レイヤー、上流互換の OpenCode runtime、またはその間の互換境界のどれに属するかを明確にしてください。

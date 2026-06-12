@@ -10,6 +10,21 @@ import { Skill } from "../skill"
 import { EventV2 } from "@opencode-ai/core/event"
 import PROMPT_INITIALIZE from "./template/initialize.txt"
 import PROMPT_REVIEW from "./template/review.txt"
+import PROMPT_MODE_PLAN from "./template/mode-plan.txt"
+import PROMPT_MODE_BUILD from "./template/mode-build.txt"
+import PROMPT_MODE_COMPOSE from "./template/mode-compose.txt"
+import PROMPT_MODE_SHOW from "./template/mode-show.txt"
+import PROMPT_MEMORY_LIST from "./template/memory-list.txt"
+import PROMPT_MEMORY_SEARCH from "./template/memory-search.txt"
+import PROMPT_MEMORY_FORGET from "./template/memory-forget.txt"
+import PROMPT_CHECKPOINT from "./template/checkpoint.txt"
+import PROMPT_TASK from "./template/task.txt"
+import PROMPT_GOAL from "./template/goal.txt"
+import PROMPT_STOP from "./template/stop.txt"
+import PROMPT_COMPOSE from "./template/compose.txt"
+import PROMPT_DREAM from "./template/dream.txt"
+import PROMPT_DISTILL from "./template/distill.txt"
+import PROMPT_VOICE from "./template/voice.txt"
 
 type State = {
   commands: Record<string, Info>
@@ -54,6 +69,21 @@ export function hints(template: string) {
 export const Default = {
   INIT: "init",
   REVIEW: "review",
+  MODE_PLAN: "plan",
+  MODE_BUILD: "build",
+  MODE_COMPOSE: "compose",
+  MODE_SHOW: "mode",
+  MEMORY_LIST: "memory",
+  MEMORY_SEARCH: "memory-search",
+  MEMORY_FORGET: "memory-forget",
+  CHECKPOINT: "checkpoint",
+  TASK: "task",
+  GOAL: "goal",
+  STOP: "stop",
+  COMPOSE: "compose",
+  DREAM: "dream",
+  DISTILL: "distill",
+  VOICE: "voice",
 } as const
 
 export interface Interface {
@@ -93,6 +123,150 @@ export const layer = Layer.effect(
         },
         subtask: true,
         hints: hints(PROMPT_REVIEW),
+      }
+      // Mode switching commands
+      commands[Default.MODE_PLAN] = {
+        name: Default.MODE_PLAN,
+        description: "switch to read-only plan mode",
+        agent: "plan",
+        source: "command",
+        get template() {
+          return PROMPT_MODE_PLAN
+        },
+        hints: [],
+      }
+      commands[Default.MODE_BUILD] = {
+        name: Default.MODE_BUILD,
+        description: "switch to full-access build mode",
+        agent: "build",
+        source: "command",
+        get template() {
+          return PROMPT_MODE_BUILD
+        },
+        hints: [],
+      }
+      commands[Default.MODE_COMPOSE] = {
+        name: Default.MODE_COMPOSE,
+        description: "switch to workflow orchestration compose mode",
+        agent: "compose",
+        source: "command",
+        get template() {
+          return PROMPT_MODE_COMPOSE
+        },
+        hints: [],
+      }
+      commands[Default.MODE_SHOW] = {
+        name: Default.MODE_SHOW,
+        description: "show current mode and capability profile",
+        source: "command",
+        get template() {
+          return PROMPT_MODE_SHOW
+        },
+        hints: [],
+      }
+      // Memory commands
+      commands[Default.MEMORY_LIST] = {
+        name: Default.MEMORY_LIST,
+        description: "list project memory items from .agent/MEMORY.md",
+        source: "command",
+        get template() {
+          return PROMPT_MEMORY_LIST
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.MEMORY_SEARCH] = {
+        name: Default.MEMORY_SEARCH,
+        description: "search project memory",
+        source: "command",
+        get template() {
+          return PROMPT_MEMORY_SEARCH
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.MEMORY_FORGET] = {
+        name: Default.MEMORY_FORGET,
+        description: "remove an item from project memory",
+        source: "command",
+        get template() {
+          return PROMPT_MEMORY_FORGET
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.CHECKPOINT] = {
+        name: Default.CHECKPOINT,
+        description: "write a session checkpoint to .agent/checkpoint.md",
+        source: "command",
+        get template() {
+          return PROMPT_CHECKPOINT
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.TASK] = {
+        name: Default.TASK,
+        description: "manage the task graph — create|split|start|block|done|tree",
+        source: "command",
+        get template() {
+          return PROMPT_TASK
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.GOAL] = {
+        name: Default.GOAL,
+        description: "manage the active goal and stopping condition at .agent/goal.md",
+        source: "command",
+        get template() {
+          return PROMPT_GOAL
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.STOP] = {
+        name: Default.STOP,
+        description: "evaluate goal completion before stopping (use --force to override)",
+        source: "command",
+        get template() {
+          return PROMPT_STOP
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.COMPOSE] = {
+        name: Default.COMPOSE,
+        description: "run a multi-step compose workflow — feature|tdd|debug|review|list|status|cancel",
+        agent: "compose",
+        source: "command",
+        get template() {
+          return PROMPT_COMPOSE
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      // Dream & Distill — memory promotion and skill extraction
+      commands[Default.DREAM] = {
+        name: Default.DREAM,
+        description: "extract durable project knowledge from this session into .agent/MEMORY.md",
+        agent: "build",
+        source: "command",
+        get template() {
+          return PROMPT_DREAM
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.DISTILL] = {
+        name: Default.DISTILL,
+        description: "detect repeated patterns and propose reusable skills/workflows/commands",
+        agent: "plan",
+        source: "command",
+        get template() {
+          return PROMPT_DISTILL
+        },
+        hints: ["$ARGUMENTS"],
+      }
+      commands[Default.VOICE] = {
+        name: Default.VOICE,
+        description: "control local voice input — on|off|push-to-talk|confirm-before-send|status",
+        source: "command",
+        get template() {
+          return PROMPT_VOICE
+        },
+        hints: ["$ARGUMENTS"],
       }
 
       for (const [name, command] of Object.entries(cfg.command ?? {})) {

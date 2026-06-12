@@ -1,0 +1,31 @@
+Manage the active goal at .agent/goal.md.
+
+$ARGUMENTS
+
+If no argument or "show": Read .agent/goal.md and display the goal, done criteria, and not-done-if conditions.
+
+If "set <text>": Write a new goal to .agent/goal.md. Ask the user for:
+1. The goal (what we are building/fixing)
+2. Done means (concrete criteria — what must be true for this to be done)
+3. Not done if (conditions that must fail — common shortcuts or incomplete work)
+
+Then write the file and confirm.
+
+If "clear": Clear the goal file and confirm.
+
+Format the goal file using the standard template:
+
+```md
+# Active Goal
+
+## Goal
+<goal text>
+
+## Done Means
+- <criterion 1>
+- <criterion 2>
+
+## Not Done If
+- <condition 1>
+- <condition 2>
+```

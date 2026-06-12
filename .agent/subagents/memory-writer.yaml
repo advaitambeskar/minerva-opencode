@@ -1,0 +1,42 @@
+name: memory-writer
+description: >
+  Extracts and promotes durable project knowledge into .agent/MEMORY.md.
+  Shows a reviewable diff before applying any changes.
+  Never writes secrets or temporary hypotheses.
+mode: plan
+tools:
+  - read_file
+  - write_file
+  - edit_file
+  - update_memory
+max_tokens: 8000
+output_schema:
+  type: object
+  required:
+    - items_extracted
+    - items_rejected
+    - diff_preview
+    - applied
+  properties:
+    items_extracted:
+      type: array
+      items:
+        type: object
+        properties:
+          kind: { type: string }
+          text: { type: string }
+          target_section: { type: string }
+          confidence: { type: number }
+          evidence: { type: string }
+    items_rejected:
+      type: array
+      items:
+        type: object
+        properties:
+          text: { type: string }
+          reason: { type: string }
+    diff_preview:
+      type: string
+      description: Preview of MEMORY.md changes
+    applied:
+      type: boolean

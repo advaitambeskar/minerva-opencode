@@ -1,0 +1,43 @@
+name: debugger
+description: >
+  Read-mostly debugging agent. Reads logs, test output, stack traces, and source code
+  to localize bugs and propose fixes. Can run tests but cannot edit files.
+mode: plan
+tools:
+  - read_file
+  - shell_readonly
+  - git_read
+max_tokens: 16000
+output_schema:
+  type: object
+  required:
+    - summary
+    - root_cause
+    - reproduction_steps
+    - proposed_fix
+    - confidence
+  properties:
+    summary:
+      type: string
+    root_cause:
+      type: string
+    reproduction_steps:
+      type: array
+      items: { type: string }
+    proposed_fix:
+      type: object
+      properties:
+        description: { type: string }
+        files:
+          type: array
+          items:
+            type: object
+            properties:
+              path: { type: string }
+              change_description: { type: string }
+    confidence:
+      type: number
+      description: 0.0 to 1.0
+    additional_investigation_needed:
+      type: array
+      items: { type: string }

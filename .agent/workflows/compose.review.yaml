@@ -1,0 +1,34 @@
+name: compose-review
+description: Multi-angle code review workflow.
+inputs:
+  - name: diff
+    required: true
+    description: Git diff, branch name, PR number, or description of changes to review
+steps:
+  - id: review_correctness
+    agent: reviewer
+    mode: plan
+    description: Review for logical correctness and correctness of implementation
+    output: correctness_report
+
+  - id: review_security
+    agent: researcher
+    mode: plan
+    description: Review for security vulnerabilities and risks
+    input_from: [correctness_report]
+    output: security_report
+
+  - id: review_tests
+    agent: tester
+    mode: plan
+    description: Review test coverage and quality
+    input_from: [correctness_report]
+    output: test_coverage_report
+
+  - id: suggest_patch
+    agent: build
+    mode: build
+    description: Propose improvements based on review findings
+    input_from: [correctness_report, security_report, test_coverage_report]
+    requires_approval: true
+    output: suggested_patches

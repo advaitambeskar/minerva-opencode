@@ -1,0 +1,21 @@
+Show the current agent mode and its capability profile.
+
+Read .agent/goal.md (if it exists) and the active tasks from the task graph.
+
+Format your response as:
+
+**Current Mode:** <mode name>
+
+**Allowed:**
+<brief list of what is allowed without approval>
+
+**Requires Approval:**
+<brief list of what needs user confirmation>
+
+**Active Goal:**
+<goal text or "No goal set — use /goal to set one">
+
+**Active Tasks:**
+<task tree summary or "No tasks — use /task create to start one">
+
+Do not make any changes. Just report the current state.

@@ -1,20 +1,8 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">OpenCode je open source AI agent za programiranje.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# Minerva Code
 
-<p align="center">
+**AI agent za kodiranje sa memorijom, subagentima, ciljevima i workflowima.**
+
+<p>
   <a href="README.md">English</a> |
   <a href="README.zh.md">简体中文</a> |
   <a href="README.zht.md">繁體中文</a> |
@@ -39,91 +27,159 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+Minerva Code je fork projekta [OpenCode](https://github.com/anomalyco/opencode) i nije povezana s OpenCode projektom.
 
 ---
 
-### Instalacija
+## Šta je Minerva Code?
+
+Minerva Code je agent za kodiranje koji razumije kontekst projekta. Zadržava brzi terminal workflow iz OpenCode-a i dodaje trajnu memoriju, eksplicitne ciljeve, nastavive checkpointe, semantičku pretragu koda, task graph, specijalizirane subagente i višekoračne workflowe.
+
+Cilj nije samo odgovoriti na jedan prompt. Minerva Code je dizajniran da ostane orijentisan u stvarnom inženjerskom projektu: pamti odluke, rekonstruiše kontekst nakon dugih sesija, dijeli posao na taskove, delegira fokusiranim agentima i čuva dovoljno stanja da buduće sesije mogu nastaviti gdje je prethodna stala.
+
+## Instalacija
+
+Minerva Code se trenutno razvija iz izvornog koda. Objavljena imena paketa i neki interni binariji mogu još sadržavati `opencode` dok rebranding traje.
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# Package manageri
-npm i -g opencode-ai@latest        # ili bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS i Linux (preporučeno, uvijek ažurno)
-brew install opencode              # macOS i Linux (zvanična brew formula, rjeđe se ažurira)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # Bilo koji OS
-nix run nixpkgs#opencode           # ili github:anomalyco/opencode za najnoviji dev branch
+git clone https://github.com/advaitambeskar/minerva-opencode.git
+cd minerva-opencode
+bun install
+bun dev
 ```
 
-> [!TIP]
-> Ukloni verzije starije od 0.1.x prije instalacije.
-
-### Desktop aplikacija (BETA)
-
-OpenCode je dostupan i kao desktop aplikacija. Preuzmi je direktno sa [stranice izdanja](https://github.com/anomalyco/opencode/releases) ili sa [opencode.ai/download](https://opencode.ai/download).
-
-| Platforma             | Preuzimanje                        |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, ili AppImage       |
+Korisne razvojne komande:
 
 ```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
+bun dev          # run the CLI/TUI from packages/opencode
+bun dev:web      # run the web app
+bun dev:desktop  # run the desktop app
+bun lint         # run oxlint
 ```
 
-#### Instalacijski direktorij
+Testovi su vezani za package. Pokreći ih iz relevantnog package direktorija, ne iz root direktorija repozitorija.
 
-Instalacijska skripta koristi sljedeći redoslijed prioriteta za putanju instalacije:
+## Modovi
 
-1. `$OPENCODE_INSTALL_DIR` - Prilagođeni instalacijski direktorij
-2. `$XDG_BIN_DIR` - Putanja usklađena sa XDG Base Directory specifikacijom
-3. `$HOME/bin` - Standardni korisnički bin direktorij (ako postoji ili se može kreirati)
-4. `$HOME/.opencode/bin` - Podrazumijevana rezervna lokacija
+Minerva Code ima tri ugrađena moda koja se mogu mijenjati tipkom `Tab`.
+
+| Mod | Svrha |
+| --- | --- |
+| `build` | Zadani razvojni mod s punim pristupom za uređivanje fajlova, pokretanje komandi i implementaciju promjena. |
+| `plan` | Read-only analitički mod za istraživanje codebase-a, planiranje promjena i procjenu kompromisa prije uređivanja. |
+| `compose` | Mod za workflow orkestraciju koji pokreće višekoračne pipeline kroz specijalizirane subagente. |
+
+## Subagenti
+
+Subagenti su fokusirani profili agenata koji se mogu pozvati sa `@name` u bilo kojoj poruci. Definisani su YAML fajlovima u `.agent/subagents/` i mogu se proširivati po projektu.
+
+| Subagent | Opis |
+| --- | --- |
+| `@general` | Rješava kompleksne pretrage i višekoračne zadatke koji ne pripadaju užoj ulozi. |
+| `@researcher` | Izvodi read-only istraživanje koda i dokumentacije. |
+| `@planner` | Dijeli posao na zahtjeve, taskove i implementacijske planove. |
+| `@builder` | Implementira feature ili fix u izolovanom git worktree-u kako bi glavni checkout ostao čist. |
+| `@reviewer` | Pregleda patcheve zbog ispravnosti, regresija i nedostajućih testova. |
+| `@debugger` | Reproducira greške i sužava vjerovatne uzroke. |
+| `@tester` | Pokreće ciljane testove i prijavljuje verifikacijske dokaze. |
+| `@memory-writer` | Izvlači trajna projektna saznanja i zapisuje ih u memoriju. |
+| `@skill-writer` | Pretvara ponavljajuće workflowe u ponovno upotrebljive projektne skillove. |
+
+Subagenti koji mogu pisati, kao `@builder`, predviđeni su za rad u izolovanim worktree-ovima. Read-only subagenti se mogu pokretati paralelno radi bržeg istraživanja.
+
+## Memorija
+
+Minerva Code čuva trajno projektno znanje u `.agent/MEMORY.md`. Ovaj fajl je namijenjen arhitektonskim odlukama, lokalnim konvencijama, važnim komandama, integracijskim bilješkama i poznatim zamkama koje trebaju preživjeti više od jedne chat sesije.
+
+Memorija nije samo dokument. Indeksira se u lokalnoj bazi agenata, može se pretraživati full-text pretragom i ponovo se ubacuje u system context kao kompaktna memory card kada sesije rade.
+
+Ključne komande:
+
+| Komanda | Svrha |
+| --- | --- |
+| `/memory` | Listanje ili pretraga stavki projektne memorije. |
+| `/dream` | Promovisanje korisnih saznanja iz sesije u dugoročnu memoriju. |
+| `/distill` | Otkrivanje ponavljajućih obrazaca i predlaganje reusable skills ili workflows. |
+
+Secrets se rediguju prije upisa u memoriju kako slučajni credentials ne bi ostali u trajnom projektnom znanju.
+
+## Virtuelni dugi kontekst
+
+Minerva Code ne tvrdi da ima neograničen kontekst. Održava virtuelni dugi kontekst rekonstruisanjem važnih dijelova stanja projekta iz lokalnih izvora:
+
+| Izvor | Uloga |
+| --- | --- |
+| `.agent/MEMORY.md` | Trajne činjenice i konvencije. |
+| `.agent/checkpoint.md` | Nastavljivo stanje sesije za dug ili prekinut rad. |
+| Semantic code index | Retrieval nad source chunkovima uz FTS5 i embeddinge. |
+| Task graph | Trajno stanje taskova za višekoračni rad. |
+| System context registry | Budžetirane context cards ubačene na provider-turn granicama. |
+
+Kada upotreba konteksta poraste, Minerva Code može zapisati checkpoint i rekonstruisati radni kontekst iz ovih izvora umjesto da se oslanja samo na sirovi razgovor.
+
+## Task Graph
+
+Task graph bilježi posao kao trajne taskove sa statusima, parent-child odnosima, zavisnostima i dokazima. Spremljen je u lokalnoj agent bazi, tako da planiranje i izvršavanje preživljavaju restarte.
+
+Upravljaj njim preko `/task`:
 
 ```bash
-# Primjeri
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+/task create
+/task split
+/task start
+/task done
+/task tree
 ```
 
-### Agenti
+Korisno je kada feature treba više strukture od ravne checklist, ali treba ostati blizu agent sesije.
 
-OpenCode uključuje dva ugrađena agenta između kojih možeš prebacivati tasterom `Tab`.
+## Workflowi
 
-- **build** - Podrazumijevani agent sa punim pristupom za razvoj
-- **plan** - Agent samo za čitanje za analizu i istraživanje koda
-  - Podrazumijevano zabranjuje izmjene datoteka
-  - Traži dozvolu prije pokretanja bash komandi
-  - Idealan za istraživanje nepoznatih codebase-ova ili planiranje izmjena
+Workflowi su YAML-definisani pipelinei u `.agent/workflows/`. Omogućavaju Minerva Code-u da pokrene strukturiran niz koraka kroz specijalizirane agente.
 
-Uključen je i **general** pod-agent za složene pretrage i višekoračne zadatke.
-Koristi se interno i može se pozvati pomoću `@general` u porukama.
+Ugrađene workflow komande:
 
-Saznaj više o [agentima](https://opencode.ai/docs/agents).
+```bash
+/compose feature
+/compose tdd
+/compose debug
+/compose review
+```
 
-### Dokumentacija
+Feature workflow može analizirati spec, podijeliti ga u task tree, napraviti implementacijski plan, pokrenuti izolovanog buildera, izvršiti testove, pregledati patch i provjeriti da li je cilj zadovoljen. Workflow runs i steps se čuvaju, tako da se prekinut rad može pregledati ili nastaviti.
 
-Za više informacija o konfiguraciji OpenCode-a, [**pogledaj dokumentaciju**](https://opencode.ai/docs).
+## Komande
 
-### Doprinosi
+Upiši `/` u Minerva Code da otkriješ komande. Važne komande:
 
-Ako želiš doprinositi OpenCode-u, pročitaj [upute za doprinošenje](./CONTRIBUTING.md) prije slanja pull requesta.
+| Komanda | Svrha |
+| --- | --- |
+| `/goal` | Postavljanje ili pregled aktivnog uslova završetka. |
+| `/task` | Upravljanje trajnim task graphom. |
+| `/checkpoint` | Snimanje nastavivog snapshot-a sesije u `.agent/checkpoint.md`. |
+| `/compose` | Pokretanje workflowa kao `feature`, `tdd`, `debug` i `review`. |
+| `/voice` | Prebacivanje voice input modova kao `on`, `off` i `push-to-talk`. |
+| `/memory` | Listanje, pretraga ili zaboravljanje projektne memorije. |
+| `/dream` | Promovisanje session learninga u trajnu memoriju. |
+| `/distill` | Izvlačenje reusable skills ili workflows iz ponavljajućeg ponašanja. |
 
-### Gradnja na OpenCode-u
+## Projektni mozak `.agent/`
 
-Ako radiš na projektu koji je povezan s OpenCode-om i koristi "opencode" kao dio naziva, npr. "opencode-dashboard" ili "opencode-mobile", dodaj napomenu u svoj README da projekat nije napravio OpenCode tim i da nije povezan s nama.
+`.agent/` je kanonski direktorij za konfiguraciju i stanje po projektu. `.opencode/` se još može prepoznati kao deprecated fallback, ali novi Minerva Code projekti trebaju koristiti `.agent/`.
 
----
+Važne putanje:
 
-**Pridruži se našoj zajednici** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+| Putanja | Svrha |
+| --- | --- |
+| `.agent/MEMORY.md` | Trajna projektna memorija. |
+| `.agent/notes.md` | Privremene scratchpad bilješke. |
+| `.agent/goal.md` | Aktivni uslov završetka. |
+| `.agent/checkpoint.md` | Najnoviji nastavivi checkpoint sesije. |
+| `.agent/subagents/` | Projektno definisani subagent profili. |
+| `.agent/workflows/` | Workflow definicije za `/compose`. |
+| `.agent/skills/` | Ponovno upotrebljivi project skills. |
+| `.agent/state/` | Lokalno stanje i indeksi; treba ostati gitignored. |
+
+## Doprinos
+
+Ako želiš doprinijeti, pročitaj [CONTRIBUTING.md](./CONTRIBUTING.md) prije otvaranja pull requesta. Pošto je Minerva Code fork, jasno naznači da li promjena pripada Minerva sloju, upstream-kompatibilnom OpenCode runtime-u ili granici kompatibilnosti između njih.

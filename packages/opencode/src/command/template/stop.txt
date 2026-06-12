@@ -1,0 +1,38 @@
+Evaluate whether the active goal is satisfied before stopping.
+
+$ARGUMENTS
+
+If "--force" is in the argument: Stop immediately without evaluation. Log: "User forced stop."
+
+Otherwise, perform a stop evaluation:
+
+1. Read .agent/goal.md for the goal, done-means, and not-done-if criteria.
+2. Review the current task tree from .agent/tasks/.
+3. Review what commands were run this session (look at the checkpoint and notes).
+4. Run `git diff --stat HEAD` to check if code changes were made.
+5. Evaluate each "Done Means" criterion:
+   - Is there evidence it was satisfied?
+   - Was relevant test output shown?
+6. Evaluate each "Not Done If" condition:
+   - Would any of these block completion?
+
+Output your evaluation in this format:
+
+**Stop Evaluation**
+
+Goal: <goal text>
+
+**Criteria Check:**
+- ✓ <criterion>: <evidence>
+- ✗ <criterion>: <missing evidence>
+
+**Not Done If Check:**
+- ✓ <condition>: verified clear
+- ⚠ <condition>: uncertain
+
+**Verdict:** satisfied (confidence: X%) / not satisfied
+
+**Missing evidence:** <list>
+**Next required action:** <action>
+
+If all criteria are satisfied with high confidence (≥80%), confirm stopping. Otherwise, state what must be done before stopping.

@@ -1,0 +1,50 @@
+name: compose-tdd
+description: Test-driven development workflow.
+inputs:
+  - name: spec
+    required: true
+    description: Feature specification or user story
+steps:
+  - id: write_tests
+    agent: build
+    mode: build
+    description: Write failing tests based on the spec
+    requires_approval: true
+    output: test_files
+
+  - id: run_failing_tests
+    agent: tester
+    mode: plan
+    description: Verify tests fail (red state)
+    input_from: [test_files]
+    output: failing_results
+
+  - id: implement
+    agent: build
+    mode: build
+    description: Implement the minimal code to make tests pass
+    input_from: [failing_results, test_files]
+    requires_approval: true
+    output: implementation
+
+  - id: run_tests
+    agent: tester
+    mode: plan
+    description: Run tests to verify they pass (green state)
+    input_from: [implementation]
+    output: passing_results
+
+  - id: refactor
+    agent: build
+    mode: build
+    description: Refactor to improve code quality while keeping tests green
+    input_from: [passing_results, implementation]
+    requires_approval: true
+    output: refactored
+
+  - id: review
+    agent: reviewer
+    mode: plan
+    description: Review the final implementation
+    input_from: [refactored]
+    output: review_report

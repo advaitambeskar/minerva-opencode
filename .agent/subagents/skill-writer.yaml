@@ -1,0 +1,46 @@
+name: skill-writer
+description: >
+  Creates candidate reusable skills, workflow YAML files, or slash command templates
+  from repeated patterns. All proposals require user approval before installation.
+  Never installs or activates skills without explicit user approval.
+mode: plan
+tools:
+  - read_file
+  - write_file
+  - update_memory
+max_tokens: 8000
+output_schema:
+  type: object
+  required:
+    - proposed_skills
+    - proposed_workflows
+    - proposed_commands
+    - requires_approval
+  properties:
+    proposed_skills:
+      type: array
+      items:
+        type: object
+        properties:
+          name: { type: string }
+          description: { type: string }
+          content_preview: { type: string }
+          frequency: { type: number }
+          confidence: { type: number }
+    proposed_workflows:
+      type: array
+      items:
+        type: object
+        properties:
+          name: { type: string }
+          steps_preview: { type: array, items: { type: string } }
+    proposed_commands:
+      type: array
+      items:
+        type: object
+        properties:
+          name: { type: string }
+          template_preview: { type: string }
+    requires_approval:
+      type: boolean
+      default: true

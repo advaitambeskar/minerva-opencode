@@ -1,0 +1,18 @@
+List all memory items stored in .agent/MEMORY.md and the agent database.
+
+Read .agent/MEMORY.md and parse its sections.
+
+Format the output as a structured list grouped by section:
+
+**Section name**
+- Item text (source: path, kind, confidence%)
+- ...
+
+Include items from all sections except "Superseded / Deprecated". Show that section separately at the end if it has content.
+
+Also show:
+- Path to MEMORY.md
+- Last modified time (if accessible)
+- Total item count
+
+$ARGUMENTS

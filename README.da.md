@@ -1,20 +1,8 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">Den open source AI-kodeagent.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# Minerva Code
 
-<p align="center">
+**En memory-first AI-kodeagent med subagents, mål og workflows.**
+
+<p>
   <a href="README.md">English</a> |
   <a href="README.zh.md">简体中文</a> |
   <a href="README.zht.md">繁體中文</a> |
@@ -39,91 +27,159 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+Minerva Code er et fork af [OpenCode](https://github.com/anomalyco/opencode) og er ikke tilknyttet OpenCode-projektet.
 
 ---
 
-### Installation
+## Hvad er Minerva Code?
+
+Minerva Code er en kodeagent med projektforståelse. Den bevarer OpenCodes hurtige terminal-workflow og tilføjer varig hukommelse, eksplicitte mål, genoptagelige checkpoints, semantisk kodesøgning, task graph, specialiserede subagents og flertrins workflows.
+
+Målet er ikke kun at svare på én prompt. Minerva Code er designet til at holde retningen i et rigtigt engineering-projekt: huske beslutninger, rekonstruere kontekst efter lange sessioner, dele arbejde op i tasks, delegere til fokuserede agents og gemme nok tilstand til, at fremtidige sessioner kan fortsætte, hvor den forrige stoppede.
+
+## Installation
+
+Minerva Code udvikles i øjeblikket fra kildekode. Publicerede pakkenavne og nogle interne binaries kan stadig indeholde `opencode`, mens rebrandingen er i gang.
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# Pakkehåndteringer
-npm i -g opencode-ai@latest        # eller bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS og Linux (anbefalet, altid up to date)
-brew install opencode              # macOS og Linux (officiel brew formula, opdateres sjældnere)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # alle OS
-nix run nixpkgs#opencode           # eller github:anomalyco/opencode for nyeste dev-branch
+git clone https://github.com/advaitambeskar/minerva-opencode.git
+cd minerva-opencode
+bun install
+bun dev
 ```
 
-> [!TIP]
-> Fjern versioner ældre end 0.1.x før installation.
-
-### Desktop-app (BETA)
-
-OpenCode findes også som desktop-app. Download direkte fra [releases-siden](https://github.com/anomalyco/opencode/releases) eller [opencode.ai/download](https://opencode.ai/download).
-
-| Platform              | Download                           |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, eller AppImage     |
+Nyttige udviklingskommandoer:
 
 ```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
+bun dev          # run the CLI/TUI from packages/opencode
+bun dev:web      # run the web app
+bun dev:desktop  # run the desktop app
+bun lint         # run oxlint
 ```
 
-#### Installationsmappe
+Tests er package-scoped. Kør dem fra den relevante package-mappe, ikke fra repository-roden.
 
-Installationsscriptet bruger følgende prioriteringsrækkefølge for installationsstien:
+## Modes
 
-1. `$OPENCODE_INSTALL_DIR` - Tilpasset installationsmappe
-2. `$XDG_BIN_DIR` - Sti der følger XDG Base Directory Specification
-3. `$HOME/bin` - Standard bruger-bin-mappe (hvis den findes eller kan oprettes)
-4. `$HOME/.opencode/bin` - Standard fallback
+Minerva Code indeholder tre indbyggede modes, som kan skiftes med `Tab`.
+
+| Mode | Formål |
+| --- | --- |
+| `build` | Standard udviklingsmode med fuld adgang til at redigere filer, køre kommandoer og implementere ændringer. |
+| `plan` | Read-only analysemode til at udforske en codebase, designe en ændring og vurdere tradeoffs før redigering. |
+| `compose` | Workflow-orchestration mode til at køre flertrins pipelines gennem specialiserede subagents. |
+
+## Subagents
+
+Subagents er fokuserede agentprofiler, der kan kaldes med `@name` i enhver besked. De defineres af YAML-filer under `.agent/subagents/` og kan udvides pr. projekt.
+
+| Subagent | Beskrivelse |
+| --- | --- |
+| `@general` | Håndterer komplekse søgninger og flertrinsopgaver, der ikke passer til en smallere rolle. |
+| `@researcher` | Udfører read-only udforskning af kode og dokumentation. |
+| `@planner` | Opdeler arbejde i krav, tasks og implementeringsplaner. |
+| `@builder` | Implementerer features eller fixes i en isoleret git worktree, så hoved-checkoutet forbliver rent. |
+| `@reviewer` | Reviewer patches for korrekthed, regressioner og manglende tests. |
+| `@debugger` | Reproducerer fejl og indsnævrer sandsynlige årsager. |
+| `@tester` | Kører målrettede tests og rapporterer verifikationsevidence. |
+| `@memory-writer` | Udtrækker varig projektlæring og skriver den til memory. |
+| `@skill-writer` | Omdanner gentagne workflows til genbrugelige projektskills. |
+
+Skriveaktive subagents som `@builder` er beregnet til at arbejde i isolerede worktrees. Read-only subagents kan køre parallelt for hurtigere udforskning.
+
+## Memory
+
+Minerva Code gemmer varig projektviden i `.agent/MEMORY.md`. Denne fil er til arkitekturbeslutninger, lokale konventioner, vigtige kommandoer, integrationsnoter og kendte faldgruber, der skal overleve mere end én chat-session.
+
+Memory er ikke kun et dokument. Den indekseres i den lokale agentdatabase, kan søges med full-text search og injiceres tilbage i system context som et kompakt memory card, når sessioner kører.
+
+Vigtige kommandoer:
+
+| Kommando | Formål |
+| --- | --- |
+| `/memory` | Liste eller søge i projektets memory items. |
+| `/dream` | Promovere nyttig session-læring til long-term memory. |
+| `/distill` | Detektere gentagne mønstre og foreslå genbrugelige skills eller workflows. |
+
+Secrets redigeres før memory-skrivninger, så utilsigtede credentials ikke bevares i varig projektviden.
+
+## Virtuel lang kontekst
+
+Minerva Code hævder ikke ubegrænset context. Den vedligeholder virtuel lang context ved at rekonstruere de vigtige dele af projektets tilstand fra lokale kilder:
+
+| Kilde | Rolle |
+| --- | --- |
+| `.agent/MEMORY.md` | Varige fakta og konventioner. |
+| `.agent/checkpoint.md` | Genoptagelig session state for langt eller afbrudt arbejde. |
+| Semantic code index | FTS5- og embedding-baseret retrieval over source chunks. |
+| Task graph | Varig task state til flertrinsarbejde. |
+| System context registry | Budgeterede context cards injiceret ved provider-turn boundaries. |
+
+Når context usage bliver høj, kan Minerva Code skrive et checkpoint og genopbygge arbejdskonteksten fra disse kilder i stedet for kun at stole på den rå samtale.
+
+## Task Graph
+
+Task graph registrerer arbejde som varige tasks med statusser, parent-child relationships, dependencies og evidence. Den gemmes i den lokale agentdatabase, så planlægning og udførelse overlever genstarter.
+
+Brug `/task` til at styre den:
 
 ```bash
-# Eksempler
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+/task create
+/task split
+/task start
+/task done
+/task tree
 ```
 
-### Agents
+Det er nyttigt, når en feature kræver mere struktur end en flad checklist, men stadig skal være tæt på agent-sessionen.
 
-OpenCode har to indbyggede agents, som du kan skifte mellem med `Tab`-tasten.
+## Workflows
 
-- **build** - Standard, agent med fuld adgang til udviklingsarbejde
-- **plan** - Skrivebeskyttet agent til analyse og kodeudforskning
-  - Afviser filredigering som standard
-  - Spørger om tilladelse før bash-kommandoer
-  - Ideel til at udforske ukendte kodebaser eller planlægge ændringer
+Workflows er YAML-definerede pipelines gemt i `.agent/workflows/`. De lader Minerva Code køre en struktureret sekvens af steps gennem specialiserede agents.
 
-Derudover findes der en **general**-subagent til komplekse søgninger og flertrinsopgaver.
-Den bruges internt og kan kaldes via `@general` i beskeder.
+Indbyggede workflow-kommandoer:
 
-Læs mere om [agents](https://opencode.ai/docs/agents).
+```bash
+/compose feature
+/compose tdd
+/compose debug
+/compose review
+```
 
-### Dokumentation
+Et feature-workflow kan analysere en spec, dele den op i et task tree, lave en implementeringsplan, køre en isoleret builder, afvikle tests, reviewe patchen og verificere, om målet er opfyldt. Workflow runs og steps persisteres, så afbrudt arbejde kan inspiceres eller genoptages.
 
-For mere info om konfiguration af OpenCode, [**se vores docs**](https://opencode.ai/docs).
+## Kommandoer
 
-### Bidrag
+Skriv `/` i Minerva Code for at finde kommandoer. Vigtige kommandoer:
 
-Hvis du vil bidrage til OpenCode, så læs vores [contributing docs](./CONTRIBUTING.md) før du sender en pull request.
+| Kommando | Formål |
+| --- | --- |
+| `/goal` | Sæt eller gennemgå den aktive stopbetingelse. |
+| `/task` | Administrer den varige task graph. |
+| `/checkpoint` | Gem et genoptageligt session snapshot i `.agent/checkpoint.md`. |
+| `/compose` | Kør workflows som `feature`, `tdd`, `debug` og `review`. |
+| `/voice` | Skift voice input modes som `on`, `off` og `push-to-talk`. |
+| `/memory` | Liste, søge eller glemme projekt-memory. |
+| `/dream` | Promovere session-læring til varig memory. |
+| `/distill` | Udtrække genbrugelige skills eller workflows fra gentagen adfærd. |
 
-### Bygget på OpenCode
+## Projekt-hjernen `.agent/`
 
-Hvis du arbejder på et projekt der er relateret til OpenCode og bruger "opencode" som en del af navnet; f.eks. "opencode-dashboard" eller "opencode-mobile", så tilføj en note i din README, der tydeliggør at projektet ikke er bygget af OpenCode-teamet og ikke er tilknyttet os på nogen måde.
+`.agent/` er den kanoniske konfigurations- og tilstandsmappe pr. projekt. `.opencode/` kan stadig genkendes som deprecated fallback, men nye Minerva Code-projekter bør bruge `.agent/`.
 
----
+Vigtige stier:
 
-**Bliv en del af vores community** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+| Sti | Formål |
+| --- | --- |
+| `.agent/MEMORY.md` | Varig projekt-memory. |
+| `.agent/notes.md` | Midlertidige scratchpad notes. |
+| `.agent/goal.md` | Aktiv stopbetingelse. |
+| `.agent/checkpoint.md` | Seneste genoptagelige session checkpoint. |
+| `.agent/subagents/` | Projektdefinerede subagent-profiler. |
+| `.agent/workflows/` | Workflow definitions for `/compose`. |
+| `.agent/skills/` | Genbrugelige project skills. |
+| `.agent/state/` | Lokal state og indexer; bør forblive gitignored. |
+
+## Bidrag
+
+Hvis du vil bidrage, så læs [CONTRIBUTING.md](./CONTRIBUTING.md), før du åbner en pull request. Fordi Minerva Code er et fork, bør ændringer tydeligt vise, om de hører til Minerva-laget, den upstream-kompatible OpenCode-runtime eller kompatibilitetsgrænsen mellem dem.

@@ -117,12 +117,14 @@ export async function tmpdir<T>(options?: TmpDirOptions<T>) {
 /** Effectful scoped tmpdir. Cleaned up when the scope closes. Make sure these stay in sync */
 export function tmpdirScoped<E = never, R = never>(options?: {
   git?: boolean
+  root?: string
   config?: Partial<ConfigV1.Info> | (() => Partial<ConfigV1.Info>)
   init?: (directory: string) => Effect.Effect<void, E, R>
 }) {
   return Effect.gen(function* () {
     const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
-    const dirpath = sanitizePath(path.join(os.tmpdir(), "opencode-test-" + Math.random().toString(36).slice(2)))
+    const base = options?.root ?? os.tmpdir()
+    const dirpath = sanitizePath(path.join(base, "opencode-test-" + Math.random().toString(36).slice(2)))
     yield* Effect.promise(() => fs.mkdir(dirpath, { recursive: true }))
     const dir = sanitizePath(yield* Effect.promise(() => fs.realpath(dirpath)))
 
@@ -133,8 +135,11 @@ export function tmpdirScoped<E = never, R = never>(options?: {
       }),
     )
 
+    const gitEnv = { ...process.env, GIT_CEILING_DIRECTORIES: base }
     const git = (...args: string[]) =>
-      spawner.spawn(ChildProcess.make("git", args, { cwd: dir })).pipe(Effect.flatMap((handle) => handle.exitCode))
+      spawner
+        .spawn(ChildProcess.make("git", args, { cwd: dir, env: gitEnv }))
+        .pipe(Effect.flatMap((handle) => handle.exitCode))
 
     if (options?.git) {
       yield* git("init")

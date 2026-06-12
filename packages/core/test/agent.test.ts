@@ -3,6 +3,7 @@ import { Effect, Exit, Scope } from "effect"
 import { AgentV2 } from "@opencode-ai/core/agent"
 import { Location } from "@opencode-ai/core/location"
 import { AgentPlugin } from "@opencode-ai/core/plugin/agent"
+import { PermissionV2 } from "@opencode-ai/core/permission"
 import { AbsolutePath } from "@opencode-ai/core/schema"
 import { location } from "./fixture/location"
 import { testEffect } from "./lib/effect"
@@ -117,15 +118,73 @@ describe("AgentV2", () => {
       expect(agents.map((item) => String(item.id)).sort()).toEqual([
         "build",
         "compaction",
+        "compose",
         "explore",
         "general",
         "plan",
         "summary",
         "title",
       ])
+      const controlledBash = new Set(["build", "plan", "compose"])
       for (const item of agents) {
+        if (controlledBash.has(String(item.id))) continue
         expect(item.permissions.some((rule) => rule.action === "bash" && rule.effect !== "deny")).toBe(false)
       }
+    }),
+  )
+
+  it.effect("plan mode blocks edits except agent memory and task files", () =>
+    Effect.gen(function* () {
+      const agent = yield* AgentV2.Service
+      yield* AgentPlugin.Plugin.effect.pipe(
+        Effect.provideService(
+          Location.Service,
+          Location.Service.of(location({ directory: AbsolutePath.make("/project") })),
+        ),
+      )
+
+      const plan = yield* agent.get(AgentV2.ID.make("plan"))
+      if (!plan) throw new Error("expected plan agent")
+      expect(PermissionV2.evaluate("edit", "src/main.ts", plan.permissions).effect).toBe("deny")
+      expect(PermissionV2.evaluate("edit", ".agent/MEMORY.md", plan.permissions).effect).toBe("allow")
+      expect(PermissionV2.evaluate("edit", ".agent/tasks/T1/task.md", plan.permissions).effect).toBe("allow")
+      expect(PermissionV2.evaluate("plan_exit", "*", plan.permissions).effect).toBe("allow")
+    }),
+  )
+
+  it.effect("build mode allows edits with ask gates on destructive bash", () =>
+    Effect.gen(function* () {
+      const agent = yield* AgentV2.Service
+      yield* AgentPlugin.Plugin.effect.pipe(
+        Effect.provideService(
+          Location.Service,
+          Location.Service.of(location({ directory: AbsolutePath.make("/project") })),
+        ),
+      )
+
+      const build = yield* agent.get(AgentV2.ID.make("build"))
+      if (!build) throw new Error("expected build agent")
+      expect(PermissionV2.evaluate("edit", "src/main.ts", build.permissions).effect).toBe("allow")
+      expect(PermissionV2.evaluate("bash", "rm -rf node_modules", build.permissions).effect).toBe("ask")
+      expect(PermissionV2.evaluate("plan_enter", "*", build.permissions).effect).toBe("allow")
+    }),
+  )
+
+  it.effect("compose mode asks for direct edits but allows agent memory files", () =>
+    Effect.gen(function* () {
+      const agent = yield* AgentV2.Service
+      yield* AgentPlugin.Plugin.effect.pipe(
+        Effect.provideService(
+          Location.Service,
+          Location.Service.of(location({ directory: AbsolutePath.make("/project") })),
+        ),
+      )
+
+      const compose = yield* agent.get(AgentV2.ID.make("compose"))
+      if (!compose) throw new Error("expected compose agent")
+      expect(PermissionV2.evaluate("edit", "src/main.ts", compose.permissions).effect).toBe("ask")
+      expect(PermissionV2.evaluate("edit", ".agent/checkpoint.md", compose.permissions).effect).toBe("allow")
+      expect(PermissionV2.evaluate("task", "*", compose.permissions).effect).toBe("allow")
     }),
   )
 })

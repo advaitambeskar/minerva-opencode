@@ -1,0 +1,23 @@
+Control voice input settings.
+
+$ARGUMENTS
+
+Sub-commands:
+  /voice on              — Enable continuous voice input mode
+  /voice off             — Disable voice input
+  /voice push-to-talk    — Enable push-to-talk mode (hold key to record)
+  /voice confirm-before-send on   — Show transcript before sending (default)
+  /voice confirm-before-send off  — Send transcript immediately
+  /voice status          — Show current voice settings
+
+Voice privacy guarantee:
+- Audio is processed entirely on your machine (local VAD + local ASR)
+- Raw audio is NEVER stored or sent to any server
+- Transcripts are only logged after you explicitly submit them
+- You can edit the transcript before sending
+
+Note: Voice input requires a desktop environment with microphone access.
+It is not available in headless/server mode.
+
+If voice is not available on this platform, explain that clearly and
+suggest using text input instead.

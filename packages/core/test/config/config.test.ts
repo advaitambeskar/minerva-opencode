@@ -699,7 +699,7 @@ describe("Config", () => {
     ),
   )
 
-  it.live("loads global, ancestor, and .opencode configuration up to the project boundary", () =>
+  it.live("loads global, ancestor, and .agent configuration up to the project boundary", () =>
     Effect.acquireRelease(
       Effect.promise(() => tmpdir()),
       (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
@@ -713,17 +713,17 @@ describe("Config", () => {
           yield* Effect.promise(async () => {
             await fs.mkdir(global, { recursive: true })
             await fs.mkdir(directory, { recursive: true })
-            await fs.mkdir(path.join(root, ".opencode"), { recursive: true })
-            await fs.mkdir(path.join(directory, ".opencode"), { recursive: true })
+            await fs.mkdir(path.join(root, ".agent"), { recursive: true })
+            await fs.mkdir(path.join(directory, ".agent"), { recursive: true })
             await Promise.all([
               fs.writeFile(path.join(tmp.path, "opencode.json"), JSON.stringify({ $schema: "outside" })),
               fs.writeFile(path.join(global, "opencode.json"), JSON.stringify({ $schema: "global" })),
               fs.writeFile(path.join(root, "opencode.json"), JSON.stringify({ $schema: "root" })),
               fs.writeFile(path.join(parent, "opencode.jsonc"), JSON.stringify({ $schema: "parent" })),
               fs.writeFile(path.join(directory, "config.json"), JSON.stringify({ $schema: "directory" })),
-              fs.writeFile(path.join(root, ".opencode", "opencode.json"), JSON.stringify({ $schema: "root-dot" })),
+              fs.writeFile(path.join(root, ".agent", "opencode.json"), JSON.stringify({ $schema: "root-dot" })),
               fs.writeFile(
-                path.join(directory, ".opencode", "opencode.jsonc"),
+                path.join(directory, ".agent", "opencode.jsonc"),
                 JSON.stringify({ $schema: "directory-dot" }),
               ),
             ])
@@ -736,8 +736,8 @@ describe("Config", () => {
 
             expect(entries.filter((entry) => entry.type === "directory").map((entry) => entry.path)).toEqual([
               AbsolutePath.make(global),
-              AbsolutePath.make(path.join(root, ".opencode")),
-              AbsolutePath.make(path.join(directory, ".opencode")),
+              AbsolutePath.make(path.join(root, ".agent")),
+              AbsolutePath.make(path.join(directory, ".agent")),
             ])
             expect(documents.map((document) => document.info.$schema)).toEqual([
               "global",
@@ -754,13 +754,110 @@ describe("Config", () => {
               "parent",
               "directory",
               "root-dot",
-              AbsolutePath.make(path.join(root, ".opencode")),
+              AbsolutePath.make(path.join(root, ".agent")),
               "directory-dot",
-              AbsolutePath.make(path.join(directory, ".opencode")),
+              AbsolutePath.make(path.join(directory, ".agent")),
             ])
           }).pipe(
             Effect.provide(
               testLayer(directory, global, root, {
+                type: "git",
+                store: AbsolutePath.make(path.join(root, ".git")),
+              }),
+            ),
+          )
+        })
+      }),
+    ),
+  )
+
+  it.live("falls back to .opencode/ when .agent/ does not exist", () =>
+    Effect.acquireRelease(
+      Effect.promise(() => tmpdir()),
+      (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
+    ).pipe(
+      Effect.flatMap((tmp) => {
+        const global = path.join(tmp.path, "global")
+        const root = path.join(tmp.path, "repo")
+        const directory = path.join(root, "sub")
+        return Effect.gen(function* () {
+          yield* Effect.promise(async () => {
+            await fs.mkdir(global, { recursive: true })
+            await fs.mkdir(directory, { recursive: true })
+            await fs.mkdir(path.join(root, ".opencode"), { recursive: true })
+            await Promise.all([
+              fs.writeFile(path.join(global, "opencode.json"), JSON.stringify({ $schema: "global" })),
+              fs.writeFile(
+                path.join(root, ".opencode", "opencode.json"),
+                JSON.stringify({ $schema: "fallback-dot" }),
+              ),
+            ])
+          })
+
+          return yield* Effect.gen(function* () {
+            const config = yield* Config.Service
+            const entries = yield* config.entries()
+
+            expect(entries.filter((entry) => entry.type === "directory").map((entry) => entry.path)).toEqual([
+              AbsolutePath.make(global),
+              AbsolutePath.make(path.join(root, ".opencode")),
+            ])
+            expect(
+              entries.filter((entry) => entry.type === "document").map((entry) => entry.info.$schema),
+            ).toEqual(["global", "fallback-dot"])
+          }).pipe(
+            Effect.provide(
+              testLayer(directory, global, root, {
+                type: "git",
+                store: AbsolutePath.make(path.join(root, ".git")),
+              }),
+            ),
+          )
+        })
+      }),
+    ),
+  )
+
+  it.live(".agent/ takes precedence over .opencode/ at the same directory level", () =>
+    Effect.acquireRelease(
+      Effect.promise(() => tmpdir()),
+      (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
+    ).pipe(
+      Effect.flatMap((tmp) => {
+        const global = path.join(tmp.path, "global")
+        const root = path.join(tmp.path, "repo")
+        return Effect.gen(function* () {
+          yield* Effect.promise(async () => {
+            await fs.mkdir(global, { recursive: true })
+            await fs.mkdir(root, { recursive: true })
+            await fs.mkdir(path.join(root, ".agent"), { recursive: true })
+            await fs.mkdir(path.join(root, ".opencode"), { recursive: true })
+            await Promise.all([
+              fs.writeFile(path.join(global, "opencode.json"), JSON.stringify({ $schema: "global" })),
+              fs.writeFile(path.join(root, ".agent", "opencode.json"), JSON.stringify({ $schema: "agent-wins" })),
+              fs.writeFile(
+                path.join(root, ".opencode", "opencode.json"),
+                JSON.stringify({ $schema: "opencode-loses" }),
+              ),
+            ])
+          })
+
+          return yield* Effect.gen(function* () {
+            const config = yield* Config.Service
+            const entries = yield* config.entries()
+            const dirPaths = entries.filter((entry) => entry.type === "directory").map((entry) => entry.path)
+            const docSchemas = entries
+              .filter((entry) => entry.type === "document")
+              .map((entry) => entry.info.$schema)
+
+            // Only .agent/ is included; .opencode/ at the same level is skipped
+            expect(dirPaths).toContain(AbsolutePath.make(path.join(root, ".agent")))
+            expect(dirPaths).not.toContain(AbsolutePath.make(path.join(root, ".opencode")))
+            expect(docSchemas).toContain("agent-wins")
+            expect(docSchemas).not.toContain("opencode-loses")
+          }).pipe(
+            Effect.provide(
+              testLayer(root, global, root, {
                 type: "git",
                 store: AbsolutePath.make(path.join(root, ".git")),
               }),

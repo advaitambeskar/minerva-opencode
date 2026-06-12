@@ -135,21 +135,80 @@ export const Plugin = PluginV2.define({
         )
       })
 
+      // build: full-access agent — mirrors the default but with explicit ask
+      // gates on destructive shell operations and git writes.
+      editor.update(AgentV2.ID.make("build"), (item) => {
+        item.description =
+          "Build mode. Full implementation access. Destructive file deletions, git writes, and arbitrary network require approval."
+        item.system ??= BUILD_SYSTEM
+        item.mode = "primary"
+        item.permissions.push(
+          ...PermissionV2.merge(defaults, [
+            { action: "question", resource: "*", effect: "allow" },
+            { action: "plan_enter", resource: "*", effect: "allow" },
+            // Require approval for high-impact operations
+            { action: "bash", resource: "rm *", effect: "ask" },
+            { action: "bash", resource: "git push*", effect: "ask" },
+            { action: "bash", resource: "git reset --hard*", effect: "ask" },
+            { action: "bash", resource: "curl*", effect: "ask" },
+            { action: "bash", resource: "wget*", effect: "ask" },
+          ]),
+        )
+      })
+
+      // plan: read-only exploration mode — can read, search, run readonly shell,
+      // update memory/tasks but cannot write files (except .agent/plans/).
       editor.update(AgentV2.ID.make("plan"), (item) => {
-        item.description = "Plan mode. Disallows all edit tools."
+        item.description =
+          "Plan mode. Read-only exploration. File edits are blocked. Can update memory and create tasks."
         item.mode = "primary"
         item.permissions.push(
           ...PermissionV2.merge(defaults, [
             { action: "question", resource: "*", effect: "allow" },
             { action: "plan_exit", resource: "*", effect: "allow" },
             { action: "external_directory", resource: path.join(Global.Path.data, "plans", "*"), effect: "allow" },
+            // Deny all edits except plan files and agent memory files
             { action: "edit", resource: "*", effect: "deny" },
+            { action: "edit", resource: path.join(".agent", "plans", "*.md"), effect: "allow" },
+            { action: "edit", resource: path.join(".agent", "MEMORY.md"), effect: "allow" },
+            { action: "edit", resource: path.join(".agent", "notes.md"), effect: "allow" },
+            { action: "edit", resource: path.join(".agent", "tasks", "**", "*.md"), effect: "allow" },
             { action: "edit", resource: path.join(".opencode", "plans", "*.md"), effect: "allow" },
             {
               action: "edit",
               resource: path.relative(worktree, path.join(Global.Path.data, "plans", "*.md")),
               effect: "allow",
             },
+            // Deny mutating bash in plan mode
+            { action: "bash", resource: "*", effect: "ask" },
+            { action: "todowrite", resource: "*", effect: "allow" },
+          ]),
+        )
+      })
+
+      // compose: workflow orchestration mode — can spawn subagents, create tasks,
+      // run workflows, but direct file edits require explicit approval.
+      editor.update(AgentV2.ID.make("compose"), (item) => {
+        item.description =
+          "Compose mode. Orchestrates multi-step workflows and subagents. Direct file edits require approval."
+        item.mode = "primary"
+        item.permissions.push(
+          ...PermissionV2.merge(defaults, [
+            { action: "question", resource: "*", effect: "allow" },
+            { action: "plan_enter", resource: "*", effect: "allow" },
+            // Direct edits need approval — compose should coordinate through subagents
+            { action: "edit", resource: "*", effect: "ask" },
+            // Agent memory and task files are always writable
+            { action: "edit", resource: path.join(".agent", "MEMORY.md"), effect: "allow" },
+            { action: "edit", resource: path.join(".agent", "notes.md"), effect: "allow" },
+            { action: "edit", resource: path.join(".agent", "checkpoint.md"), effect: "allow" },
+            { action: "edit", resource: path.join(".agent", "goal.md"), effect: "allow" },
+            { action: "edit", resource: path.join(".agent", "tasks", "**", "*.md"), effect: "allow" },
+            // Mutating bash needs approval
+            { action: "bash", resource: "*", effect: "ask" },
+            // Subagent spawning is always allowed
+            { action: "task", resource: "*", effect: "allow" },
+            { action: "todowrite", resource: "*", effect: "allow" },
           ]),
         )
       })

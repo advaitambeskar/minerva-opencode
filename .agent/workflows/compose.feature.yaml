@@ -1,0 +1,55 @@
+name: compose-feature
+description: Spec-driven feature implementation workflow.
+inputs:
+  - name: spec
+    required: true
+    description: Feature specification or description
+steps:
+  - id: understand
+    agent: planner
+    mode: plan
+    description: Analyze the spec and summarize requirements
+    output: spec_summary
+
+  - id: task_breakdown
+    agent: planner
+    mode: plan
+    description: Break down the feature into a task tree
+    input_from: [spec_summary]
+    output: task_tree
+
+  - id: implementation_plan
+    agent: planner
+    mode: plan
+    description: Create detailed implementation plan for each task
+    input_from: [task_tree]
+    output: implementation_plan
+
+  - id: implement
+    agent: build
+    mode: build
+    description: Implement the feature according to the plan
+    input_from: [implementation_plan, task_tree]
+    requires_approval: true
+    output: patch
+
+  - id: run_tests
+    agent: tester
+    mode: plan
+    description: Run tests to verify the implementation
+    input_from: [patch]
+    output: test_results
+
+  - id: review
+    agent: reviewer
+    mode: plan
+    description: Review the implementation for correctness and risks
+    input_from: [patch, test_results]
+    output: review_report
+
+  - id: verify_goal
+    agent: build
+    mode: build
+    description: Evaluate whether the goal is satisfied
+    input_from: [review_report, test_results]
+    output: stop_judgment

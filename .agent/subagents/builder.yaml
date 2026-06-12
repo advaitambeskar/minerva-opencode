@@ -1,0 +1,45 @@
+name: builder
+description: >
+  Write-capable subagent that operates in an isolated git worktree.
+  Cannot touch the main worktree directly. Changes must be reviewed
+  and merged by the parent agent after reviewer approval.
+  Use for implementing features or fixes in isolation.
+mode: build
+tools:
+  - read_file
+  - write_file
+  - edit_file
+  - shell_readonly
+  - shell_mutating
+  - git_read
+  - git_write
+  - create_task
+  - update_memory
+max_tokens: 32000
+worktree_isolated: true
+output_schema:
+  type: object
+  required:
+    - summary
+    - files_changed
+    - patch
+  properties:
+    summary:
+      type: string
+    files_changed:
+      type: array
+      items:
+        type: object
+        properties:
+          path: { type: string }
+          operation: { type: string, enum: [created, modified, deleted] }
+          lines_added: { type: number }
+          lines_deleted: { type: number }
+    patch:
+      type: string
+      description: git diff --stat output of changes
+    tests_passed:
+      type: boolean
+    review_required:
+      type: boolean
+      default: true

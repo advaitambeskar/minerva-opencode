@@ -1,0 +1,40 @@
+name: reviewer
+description: >
+  Read-only code review agent. Reviews diffs, changes, and code for correctness,
+  security risks, missing tests, and style issues. Returns structured findings.
+mode: plan
+tools:
+  - read_file
+  - git_read
+  - shell_readonly
+max_tokens: 12000
+output_schema:
+  type: object
+  required:
+    - summary
+    - risks
+    - required_changes
+    - approval
+  properties:
+    summary:
+      type: string
+    risks:
+      type: array
+      items:
+        type: object
+        properties:
+          file: { type: string }
+          line: { type: string }
+          description: { type: string }
+          severity: { type: string, enum: [low, medium, high, critical] }
+    required_changes:
+      type: array
+      items:
+        type: object
+        properties:
+          description: { type: string }
+          file: { type: string }
+          blocking: { type: boolean }
+    approval:
+      type: string
+      enum: [approved, approved_with_changes, changes_required, rejected]

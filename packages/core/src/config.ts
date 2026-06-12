@@ -139,6 +139,8 @@ export const layer = Layer.effect(
     const location = yield* Location.Service
     const policy = yield* Policy.Service
     const names = ["config.json", "opencode.json", "opencode.jsonc"]
+    // Canonical project dir is .agent/; .opencode/ is kept as a deprecated fallback.
+    const projectDirNames = [".agent", ".opencode"]
     const decodeOptions = { errors: "all", onExcessProperty: "ignore", propertyOrder: "original" } as const
     const decodeInfo = Schema.decodeUnknownOption(Info, decodeOptions)
     const decodeV1Info = Schema.decodeUnknownOption(ConfigV1.Info, decodeOptions)
@@ -169,36 +171,48 @@ export const layer = Layer.effect(
       ]
     })
 
+    const isProjectDir = (item: string) => projectDirNames.includes(path.basename(item))
+
     const globalDirectory = AbsolutePath.make(global.config)
     const locationIsGlobal = path.resolve(location.directory) === path.resolve(global.config)
     // Read configuration once when this location opens. Later calls reuse these
     // values until the location is reopened.
+    // Search .agent first (canonical), then .opencode (deprecated fallback).
     const discovered = locationIsGlobal
       ? []
       : yield* fs
           .up({
-            targets: [".opencode", ...names.toReversed()],
+            targets: [...projectDirNames, ...names.toReversed()],
             start: location.directory,
             stop: location.project.directory,
           })
           .pipe(Effect.orDie)
+    // Deduplicate: if both .agent and .opencode exist at the same level, prefer .agent.
+    // `discovered` is ordered nearest-first; we keep the first project dir seen per level.
+    const seenLevels = new Set<string>()
+    const projectDirs = discovered.filter((item) => {
+      if (!isProjectDir(item)) return false
+      const level = path.dirname(item)
+      if (seenLevels.has(level)) return false
+      seenLevels.add(level)
+      return true
+    })
     const directories = [
       globalDirectory,
-      ...discovered
-        .filter((item) => path.basename(item) === ".opencode")
+      ...projectDirs
         .toReversed()
         .map((directory) => AbsolutePath.make(directory)),
     ]
     // A config closer to the opened directory should win over one higher up.
     // Search starts nearby, so reverse the results before applying them.
-    const directPaths = discovered.filter((item) => path.basename(item) !== ".opencode").toReversed()
+    const directPaths = discovered.filter((item) => !isProjectDir(item)).toReversed()
     const direct = yield* Effect.forEach(directPaths, loadFile).pipe(
       Effect.orDie,
       Effect.map((configs) => configs.filter((config): config is Document => config !== undefined)),
     )
     const supplementary = yield* Effect.forEach(directories, loadDirectory).pipe(Effect.orDie)
     // Apply general settings first and more specific settings last:
-    // global config, project files, then `.opencode` files.
+    // global config, project files, then `.agent` / `.opencode` directory files.
     const configs = [...(supplementary[0] ?? []), ...direct, ...supplementary.slice(1).flat()]
     // Rules use the opposite order so a user-global rule can override a
     // repository rule. Statement order inside each file stays unchanged.

@@ -1,0 +1,12 @@
+Remove the following from project memory: $ARGUMENTS
+
+1. Search .agent/MEMORY.md for sections or items matching the query.
+2. Show the user what was found (exact text) before making any changes.
+3. Ask for confirmation.
+4. If confirmed:
+   - Remove the item from .agent/MEMORY.md by editing out the relevant line(s)
+   - Move entries to the "## Superseded / Deprecated" section with a date stamp: `[Removed YYYY-MM-DD] <original text>`
+   - If the item is a standalone section with no other content, remove the section header too
+5. Show a diff of the changes made.
+
+Never silently delete memory. Always show what is being removed.

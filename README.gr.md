@@ -1,20 +1,8 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">Ο πράκτορας τεχνητής νοημοσύνης ανοικτού κώδικα για προγραμματισμό.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# Minerva Code
 
-<p align="center">
+**Ένας AI πράκτορας προγραμματισμού με επίκεντρο τη μνήμη, subagents, στόχους και workflows.**
+
+<p>
   <a href="README.md">English</a> |
   <a href="README.zh.md">简体中文</a> |
   <a href="README.zht.md">繁體中文</a> |
@@ -39,91 +27,159 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+Το Minerva Code είναι fork του [OpenCode](https://github.com/anomalyco/opencode) και δεν συνδέεται με το έργο OpenCode.
 
 ---
 
-### Εγκατάσταση
+## Τι είναι το Minerva Code;
+
+Το Minerva Code είναι ένας πράκτορας προγραμματισμού που κατανοεί το project. Διατηρεί το γρήγορο terminal workflow του OpenCode και προσθέτει μόνιμη μνήμη, ρητούς στόχους, επαναλήψιμα checkpoints, σημασιολογική αναζήτηση κώδικα, task graph, εξειδικευμένους subagents και πολυβηματικά workflows.
+
+Ο στόχος δεν είναι απλώς να απαντά σε ένα prompt. Το Minerva Code έχει σχεδιαστεί για να παραμένει προσανατολισμένο σε ένα πραγματικό engineering project: να θυμάται αποφάσεις, να ανακατασκευάζει context μετά από μεγάλες sessions, να σπάει την εργασία σε tasks, να αναθέτει σε εστιασμένους agents και να κρατά αρκετή κατάσταση ώστε μελλοντικές sessions να συνεχίζουν από εκεί που σταμάτησε η προηγούμενη.
+
+## Εγκατάσταση
+
+Το Minerva Code αναπτύσσεται προς το παρόν από source. Τα δημοσιευμένα package names και ορισμένα εσωτερικά binaries μπορεί ακόμη να περιέχουν `opencode` όσο το rebrand βρίσκεται σε εξέλιξη.
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# Διαχειριστές πακέτων
-npm i -g opencode-ai@latest        # ή bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS και Linux (προτείνεται, πάντα ενημερωμένο)
-brew install opencode              # macOS και Linux (επίσημος τύπος brew, λιγότερο συχνές ενημερώσεις)
-sudo pacman -S opencode            # Arch Linux (Σταθερό)
-paru -S opencode-bin               # Arch Linux (Τελευταία έκδοση από AUR)
-mise use -g opencode               # Οποιοδήποτε λειτουργικό σύστημα
-nix run nixpkgs#opencode           # ή github:anomalyco/opencode με βάση την πιο πρόσφατη αλλαγή από το dev branch
+git clone https://github.com/advaitambeskar/minerva-opencode.git
+cd minerva-opencode
+bun install
+bun dev
 ```
 
-> [!TIP]
-> Αφαίρεσε παλαιότερες εκδόσεις από τη 0.1.x πριν από την εγκατάσταση.
-
-### Εφαρμογή Desktop (BETA)
-
-Το OpenCode είναι επίσης διαθέσιμο ως εφαρμογή. Κατέβασε το απευθείας από τη [σελίδα εκδόσεων](https://github.com/anomalyco/opencode/releases) ή το [opencode.ai/download](https://opencode.ai/download).
-
-| Πλατφόρμα             | Λήψη                               |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, ή AppImage         |
+Χρήσιμες εντολές ανάπτυξης:
 
 ```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
+bun dev          # run the CLI/TUI from packages/opencode
+bun dev:web      # run the web app
+bun dev:desktop  # run the desktop app
+bun lint         # run oxlint
 ```
 
-#### Κατάλογος Εγκατάστασης
+Τα tests είναι package-scoped. Εκτέλεσέ τα από τον αντίστοιχο package directory, όχι από τη ρίζα του repository.
 
-Το script εγκατάστασης τηρεί την ακόλουθη σειρά προτεραιότητας για τη διαδρομή εγκατάστασης:
+## Modes
 
-1. `$OPENCODE_INSTALL_DIR` - Προσαρμοσμένος κατάλογος εγκατάστασης
-2. `$XDG_BIN_DIR` - Διαδρομή συμβατή με τις προδιαγραφές XDG Base Directory
-3. `$HOME/bin` - Τυπικός κατάλογος εκτελέσιμων αρχείων χρήστη (εάν υπάρχει ή μπορεί να δημιουργηθεί)
-4. `$HOME/.opencode/bin` - Προεπιλεγμένη εφεδρική διαδρομή
+Το Minerva Code περιλαμβάνει τρία built-in modes που αλλάζουν με `Tab`.
+
+| Mode | Σκοπός |
+| --- | --- |
+| `build` | Προεπιλεγμένο development mode με πλήρη πρόσβαση για επεξεργασία αρχείων, εκτέλεση εντολών και υλοποίηση αλλαγών. |
+| `plan` | Read-only analysis mode για εξερεύνηση codebase, σχεδιασμό αλλαγής και αξιολόγηση tradeoffs πριν την επεξεργασία. |
+| `compose` | Workflow orchestration mode για εκτέλεση multi-step pipelines μέσω εξειδικευμένων subagents. |
+
+## Subagents
+
+Οι subagents είναι εστιασμένα agent profiles που μπορούν να κληθούν με `@name` σε οποιοδήποτε μήνυμα. Ορίζονται από YAML αρχεία κάτω από `.agent/subagents/` και μπορούν να επεκταθούν ανά project.
+
+| Subagent | Περιγραφή |
+| --- | --- |
+| `@general` | Χειρίζεται σύνθετες αναζητήσεις και multi-step tasks που δεν ταιριάζουν σε πιο στενό ρόλο. |
+| `@researcher` | Εκτελεί read-only εξερεύνηση κώδικα και τεκμηρίωσης. |
+| `@planner` | Διασπά εργασία σε requirements, tasks και implementation plans. |
+| `@builder` | Υλοποιεί features ή fixes σε απομονωμένο git worktree ώστε το κύριο checkout να μένει καθαρό. |
+| `@reviewer` | Ελέγχει patches για ορθότητα, regressions και ελλιπή tests. |
+| `@debugger` | Αναπαράγει failures και περιορίζει τις πιθανές αιτίες. |
+| `@tester` | Εκτελεί targeted tests και αναφέρει verification evidence. |
+| `@memory-writer` | Εξάγει μόνιμα project learnings και τα γράφει στη μνήμη. |
+| `@skill-writer` | Μετατρέπει επαναλαμβανόμενα workflows σε reusable project skills. |
+
+Write-capable subagents όπως ο `@builder` προορίζονται να δουλεύουν σε απομονωμένα worktrees. Read-only subagents μπορούν να τρέχουν παράλληλα για ταχύτερη εξερεύνηση.
+
+## Μνήμη
+
+Το Minerva Code κρατά μόνιμη project knowledge στο `.agent/MEMORY.md`. Αυτό το αρχείο είναι για architecture decisions, local conventions, σημαντικές commands, integration notes και known pitfalls που πρέπει να επιβιώνουν πέρα από μια μεμονωμένη chat session.
+
+Η μνήμη δεν είναι απλώς ένα έγγραφο. Γίνεται indexed στην τοπική agent database, υποστηρίζει full-text search και επανεισάγεται στο system context ως συμπαγές memory card όταν τρέχουν sessions.
+
+Κύριες εντολές:
+
+| Εντολή | Σκοπός |
+| --- | --- |
+| `/memory` | Λίστα ή αναζήτηση project memory items. |
+| `/dream` | Προώθηση χρήσιμων session learnings σε long-term memory. |
+| `/distill` | Εντοπισμός επαναλαμβανόμενων patterns και πρόταση reusable skills ή workflows. |
+
+Τα secrets γίνονται redact πριν από εγγραφές στη μνήμη, ώστε τυχαία credentials να μη διατηρούνται στη μόνιμη project knowledge.
+
+## Εικονικό μακρύ context
+
+Το Minerva Code δεν ισχυρίζεται unlimited context. Διατηρεί virtual long context ανακατασκευάζοντας τα σημαντικά μέρη της project state από τοπικές πηγές:
+
+| Πηγή | Ρόλος |
+| --- | --- |
+| `.agent/MEMORY.md` | Μόνιμα facts και conventions. |
+| `.agent/checkpoint.md` | Resumable session state για μακρά ή διακοπείσα εργασία. |
+| Semantic code index | Retrieval πάνω σε source chunks με FTS5 και embeddings. |
+| Task graph | Μόνιμη task state για multi-step work. |
+| System context registry | Budgeted context cards που εισάγονται σε provider-turn boundaries. |
+
+Όταν η χρήση context αυξάνεται, το Minerva Code μπορεί να γράψει checkpoint και να ξαναχτίσει το working context από αυτές τις πηγές αντί να βασίζεται μόνο στην raw conversation.
+
+## Task Graph
+
+Το task graph καταγράφει εργασία ως durable tasks με statuses, parent-child relationships, dependencies και evidence. Αποθηκεύεται στην τοπική agent database ώστε planning και execution να επιβιώνουν μετά από restarts.
+
+Διαχείριση με `/task`:
 
 ```bash
-# Παραδείγματα
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+/task create
+/task split
+/task start
+/task done
+/task tree
 ```
 
-### Πράκτορες
+Είναι χρήσιμο όταν ένα feature χρειάζεται περισσότερη δομή από μια flat checklist αλλά πρέπει να μείνει κοντά στην agent session.
 
-Το OpenCode περιλαμβάνει δύο ενσωματωμένους πράκτορες μεταξύ των οποίων μπορείτε να εναλλάσσεστε με το πλήκτρο `Tab`.
+## Workflows
 
-- **build** - Προεπιλεγμένος πράκτορας με πλήρη πρόσβαση για εργασία πάνω σε κώδικα
-- **plan** - Πράκτορας μόνο ανάγνωσης για ανάλυση και εξερεύνηση κώδικα
-  - Αρνείται την επεξεργασία αρχείων από προεπιλογή
-  - Ζητά άδεια πριν εκτελέσει εντολές bash
-  - Ιδανικός για εξερεύνηση άγνωστων αρχείων πηγαίου κώδικα ή σχεδιασμό αλλαγών
+Τα workflows είναι YAML-defined pipelines αποθηκευμένα στο `.agent/workflows/`. Επιτρέπουν στο Minerva Code να εκτελεί δομημένη ακολουθία steps μέσω εξειδικευμένων agents.
 
-Περιλαμβάνεται επίσης ένας **general** υποπράκτορας για σύνθετες αναζητήσεις και πολυβηματικές διεργασίες.
-Χρησιμοποιείται εσωτερικά και μπορεί να κληθεί χρησιμοποιώντας `@general` στα μηνύματα.
+Built-in workflow commands:
 
-Μάθετε περισσότερα για τους [πράκτορες](https://opencode.ai/docs/agents).
+```bash
+/compose feature
+/compose tdd
+/compose debug
+/compose review
+```
 
-### Οδηγός Χρήσης
+Ένα feature workflow μπορεί να αναλύσει spec, να το σπάσει σε task tree, να δημιουργήσει implementation plan, να τρέξει isolated builder, να εκτελέσει tests, να κάνει review στο patch και να επαληθεύσει αν ο στόχος ικανοποιήθηκε. Workflow runs και steps γίνονται persisted ώστε interrupted work να μπορεί να επιθεωρηθεί ή να συνεχιστεί.
 
-Για περισσότερες πληροφορίες σχετικά με τη ρύθμιση του OpenCode, [**πλοηγήσου στον οδηγό χρήσης μας**](https://opencode.ai/docs).
+## Εντολές
 
-### Συνεισφορά
+Πληκτρολόγησε `/` μέσα στο Minerva Code για να ανακαλύψεις commands. Σημαντικές commands:
 
-Εάν ενδιαφέρεσαι να συνεισφέρεις στο OpenCode, διαβάστε τα [οδηγό χρήσης συνεισφοράς](./CONTRIBUTING.md) πριν υποβάλεις ένα pull request.
+| Εντολή | Σκοπός |
+| --- | --- |
+| `/goal` | Ορισμός ή ανασκόπηση του active stopping condition. |
+| `/task` | Διαχείριση του durable task graph. |
+| `/checkpoint` | Αποθήκευση resumable session snapshot στο `.agent/checkpoint.md`. |
+| `/compose` | Εκτέλεση workflows όπως `feature`, `tdd`, `debug` και `review`. |
+| `/voice` | Εναλλαγή voice input modes όπως `on`, `off` και `push-to-talk`. |
+| `/memory` | Λίστα, αναζήτηση ή forget project memory. |
+| `/dream` | Προώθηση session learnings σε durable memory. |
+| `/distill` | Εξαγωγή reusable skills ή workflows από repeated behavior. |
 
-### Δημιουργία πάνω στο OpenCode
+## Το project brain `.agent/`
 
-Εάν εργάζεσαι σε ένα έργο σχετικό με το OpenCode και χρησιμοποιείτε το "opencode" ως μέρος του ονόματός του, για παράδειγμα "opencode-dashboard" ή "opencode-mobile", πρόσθεσε μια σημείωση στο README σας για να διευκρινίσεις ότι δεν είναι κατασκευασμένο από την ομάδα του OpenCode και δεν έχει καμία σχέση με εμάς.
+Το `.agent/` είναι ο canonical per-project configuration and state directory. Το `.opencode/` μπορεί ακόμη να αναγνωρίζεται ως deprecated fallback, αλλά νέα Minerva Code projects πρέπει να χρησιμοποιούν `.agent/`.
 
----
+Σημαντικά paths:
 
-**Γίνε μέλος της κοινότητάς μας** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+| Path | Σκοπός |
+| --- | --- |
+| `.agent/MEMORY.md` | Durable project memory. |
+| `.agent/notes.md` | Temporary scratchpad notes. |
+| `.agent/goal.md` | Active stopping condition. |
+| `.agent/checkpoint.md` | Latest resumable session checkpoint. |
+| `.agent/subagents/` | Project-defined subagent profiles. |
+| `.agent/workflows/` | Workflow definitions for `/compose`. |
+| `.agent/skills/` | Reusable project skills. |
+| `.agent/state/` | Local state and indexes; πρέπει να παραμένει gitignored. |
+
+## Συνεισφορά
+
+Αν θέλεις να συνεισφέρεις, διάβασε το [CONTRIBUTING.md](./CONTRIBUTING.md) πριν ανοίξεις pull request. Επειδή το Minerva Code είναι fork, κάνε σαφές αν μια αλλαγή ανήκει στο Minerva layer, στο upstream-compatible OpenCode runtime ή στο compatibility boundary μεταξύ τους.

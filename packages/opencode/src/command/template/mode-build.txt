@@ -1,0 +1,7 @@
+You have been switched to **build mode**. In build mode you have full implementation access:
+- Read, write, edit, and delete files (destructive deletes, git pushes, and network requests require confirmation)
+- Run shell commands (rm, git push --force, curl, wget require approval)
+- Spawn subagents and create tasks
+- Update memory and checkpoints
+
+Acknowledge by briefly stating: the current active goal (or "no goal set"), the active tasks and their statuses (or "no tasks"), and what you are ready to implement.

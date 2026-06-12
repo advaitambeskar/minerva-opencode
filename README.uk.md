@@ -1,20 +1,8 @@
-<p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">AI-агент для програмування з відкритим кодом.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+# Minerva Code
 
-<p align="center">
+**AI-агент для кодування з пам'яттю, subagents, цілями та workflows.**
+
+<p>
   <a href="README.md">English</a> |
   <a href="README.zh.md">简体中文</a> |
   <a href="README.zht.md">繁體中文</a> |
@@ -39,92 +27,159 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+Minerva Code є форком [OpenCode](https://github.com/anomalyco/opencode) і не пов'язана з проєктом OpenCode.
 
 ---
 
-### Встановлення
+## Що таке Minerva Code?
+
+Minerva Code — це агент для кодування, який розуміє контекст проєкту. Він зберігає швидкий terminal workflow OpenCode і додає довготривалу пам'ять, явні цілі, відновлювані checkpoints, семантичний пошук коду, task graph, спеціалізованих subagents і багатокрокові workflows.
+
+Мета не лише відповісти на один prompt. Minerva Code створена для реальних інженерних проєктів: пам'ятати рішення, відновлювати context після довгих сесій, розбивати роботу на tasks, делегувати її сфокусованим agents і зберігати достатньо стану, щоб майбутні сесії продовжували з місця зупинки.
+
+## Встановлення
+
+Minerva Code наразі розробляється з source. Назви опублікованих packages і частина внутрішніх binaries можуть ще містити `opencode`, поки триває rebrand.
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# Менеджери пакетів
-npm i -g opencode-ai@latest        # або bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS і Linux (рекомендовано, завжди актуально)
-brew install opencode              # macOS і Linux (офіційна формула Homebrew, оновлюється рідше)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # Будь-яка ОС
-nix run nixpkgs#opencode           # або github:anomalyco/opencode для найновішої dev-гілки
+git clone https://github.com/advaitambeskar/minerva-opencode.git
+cd minerva-opencode
+bun install
+bun dev
 ```
 
-> [!TIP]
-> Перед встановленням видаліть версії старші за 0.1.x.
-
-### Десктопний застосунок (BETA)
-
-OpenCode також доступний як десктопний застосунок. Завантажуйте напряму зі [сторінки релізів](https://github.com/anomalyco/opencode/releases) або [opencode.ai/download](https://opencode.ai/download).
-
-| Платформа             | Завантаження                       |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm` або AppImage        |
+Корисні команди розробки:
 
 ```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
+bun dev          # run the CLI/TUI from packages/opencode
+bun dev:web      # run the web app
+bun dev:desktop  # run the desktop app
+bun lint         # run oxlint
 ```
 
-#### Каталог встановлення
+Тести мають package scope. Запускайте їх із директорії відповідного package, а не з кореня repository.
 
-Скрипт встановлення дотримується такого порядку пріоритету для шляху встановлення:
+## Режими
 
-1. `$OPENCODE_INSTALL_DIR` - Користувацький каталог встановлення
-2. `$XDG_BIN_DIR` - Шлях, сумісний зі специфікацією XDG Base Directory
-3. `$HOME/bin` - Стандартний каталог користувацьких бінарників (якщо існує або його можна створити)
-4. `$HOME/.opencode/bin` - Резервний варіант за замовчуванням
+Minerva Code має три built-in режими, які можна перемикати через `Tab`.
+
+| Режим | Призначення |
+| --- | --- |
+| `build` | Стандартний режим розробки з повним доступом для редагування файлів, запуску команд і реалізації змін. |
+| `plan` | Read-only режим аналізу для дослідження codebase, проєктування змін і оцінки tradeoffs перед редагуванням. |
+| `compose` | Режим orchestration для workflows, що запускає multi-step pipelines через спеціалізованих subagents. |
+
+## Subagents
+
+Subagents — це сфокусовані agent profiles, які можна викликати через `@name` у будь-якому повідомленні. Вони визначаються YAML-файлами в `.agent/subagents/` і можуть розширюватися для кожного проєкту.
+
+| Subagent | Опис |
+| --- | --- |
+| `@general` | Обробляє складний пошук і multi-step tasks, які не підходять вужчій ролі. |
+| `@researcher` | Виконує read-only дослідження коду й документації. |
+| `@planner` | Розбиває роботу на requirements, tasks і implementation plans. |
+| `@builder` | Реалізує features або fixes в ізольованому git worktree, щоб main checkout залишався чистим. |
+| `@reviewer` | Перевіряє patches на correctness, regressions і відсутні tests. |
+| `@debugger` | Відтворює failures і звужує ймовірні causes. |
+| `@tester` | Запускає targeted tests і повідомляє verification evidence. |
+| `@memory-writer` | Витягує довготривалі project learnings і записує їх у memory. |
+| `@skill-writer` | Перетворює repeated workflows на reusable project skills. |
+
+Write-capable subagents, як-от `@builder`, мають працювати в ізольованих worktrees. Read-only subagents можна запускати паралельно для швидшого дослідження.
+
+## Пам'ять
+
+Minerva Code зберігає довготривалі project knowledge у `.agent/MEMORY.md`. Цей файл призначений для architecture decisions, local conventions, важливих commands, integration notes і known pitfalls, які мають пережити одну chat session.
+
+Memory — це не просто документ. Вона індексується в local agent database, підтримує full-text search і під час сесій знову inject-иться в system context як compact memory card.
+
+Ключові команди:
+
+| Команда | Призначення |
+| --- | --- |
+| `/memory` | Показати або шукати project memory items. |
+| `/dream` | Перенести корисні session learnings у long-term memory. |
+| `/distill` | Виявити repeated patterns і запропонувати reusable skills або workflows. |
+
+Secrets редагуються перед записом у memory, щоб випадкові credentials не збереглися в довготривалих знаннях проєкту.
+
+## Віртуальний довгий контекст
+
+Minerva Code не заявляє про unlimited context. Вона підтримує virtual long context, реконструюючи важливі частини project state з локальних джерел:
+
+| Джерело | Роль |
+| --- | --- |
+| `.agent/MEMORY.md` | Довготривалі факти й conventions. |
+| `.agent/checkpoint.md` | Відновлюваний session state для довгої або перерваної роботи. |
+| Semantic code index | Retrieval по source chunks на базі FTS5 і embeddings. |
+| Task graph | Довготривалий task state для multi-step work. |
+| System context registry | Budgeted context cards, що inject-яться на provider-turn boundaries. |
+
+Коли context usage стає високим, Minerva Code може записати checkpoint і відновити working context із цих джерел, а не покладатися тільки на raw conversation.
+
+## Task Graph
+
+Task graph записує роботу як durable tasks зі statuses, parent-child relationships, dependencies і evidence. Він зберігається в local agent database, тому planning і execution переживають restarts.
+
+Керуйте ним через `/task`:
 
 ```bash
-# Приклади
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+/task create
+/task split
+/task start
+/task done
+/task tree
 ```
 
-### Агенти
+Це корисно, коли feature потребує більшої структури, ніж flat checklist, але має залишатися близько до agent session.
 
-OpenCode містить два вбудовані агенти, між якими можна перемикатися клавішею `Tab`.
+## Workflows
 
-- **build** - Агент за замовчуванням із повним доступом для завдань розробки
-- **plan** - Агент лише для читання для аналізу та дослідження коду
-  - За замовчуванням забороняє редагування файлів
-  - Запитує дозвіл перед запуском bash-команд
-  - Ідеально підходить для дослідження незнайомих кодових баз або планування змін
+Workflows — це YAML-defined pipelines, що зберігаються в `.agent/workflows/`. Вони дозволяють Minerva Code запускати structured sequence of steps через specialized agents.
 
-Також доступний допоміжний агент **general** для складного пошуку та багатокрокових завдань.
-Він використовується всередині системи й може бути викликаний у повідомленнях через `@general`.
+Built-in workflow commands:
 
-Дізнайтеся більше про [agents](https://opencode.ai/docs/agents).
+```bash
+/compose feature
+/compose tdd
+/compose debug
+/compose review
+```
 
-### Документація
+Feature workflow може проаналізувати spec, розбити його на task tree, створити implementation plan, запустити isolated builder, виконати tests, review patch і перевірити, чи goal виконано. Workflow runs і steps persisted, тому interrupted work можна inspect або resume.
 
-Щоб дізнатися більше про налаштування OpenCode, [**перейдіть до нашої документації**](https://opencode.ai/docs).
+## Команди
 
-### Внесок
+Введіть `/` у Minerva Code, щоб побачити commands. Важливі commands:
 
-Якщо ви хочете зробити внесок в OpenCode, будь ласка, прочитайте нашу [документацію для контриб'юторів](./CONTRIBUTING.md) перед надсиланням pull request.
+| Команда | Призначення |
+| --- | --- |
+| `/goal` | Встановити або переглянути active stopping condition. |
+| `/task` | Керувати durable task graph. |
+| `/checkpoint` | Зберегти resumable session snapshot у `.agent/checkpoint.md`. |
+| `/compose` | Запускати workflows, як-от `feature`, `tdd`, `debug` і `review`. |
+| `/voice` | Перемикати voice input modes, як-от `on`, `off` і `push-to-talk`. |
+| `/memory` | Показати, шукати або забути project memory. |
+| `/dream` | Перенести session learnings у durable memory. |
+| `/distill` | Витягти reusable skills або workflows із repeated behavior. |
 
-### Проєкти на базі OpenCode
+## Project brain `.agent/`
 
-Якщо ви працюєте над проєктом, пов'язаним з OpenCode, і використовуєте "opencode" у назві, наприклад "opencode-dashboard" або "opencode-mobile", додайте примітку до свого README.
-Уточніть, що цей проєкт не створений командою OpenCode і жодним чином не афілійований із нами.
+`.agent/` — це canonical per-project configuration and state directory. `.opencode/` ще може розпізнаватися як deprecated fallback, але нові Minerva Code проєкти мають використовувати `.agent/`.
 
----
+Важливі шляхи:
 
-**Приєднуйтеся до нашої спільноти** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+| Шлях | Призначення |
+| --- | --- |
+| `.agent/MEMORY.md` | Durable project memory. |
+| `.agent/notes.md` | Temporary scratchpad notes. |
+| `.agent/goal.md` | Active stopping condition. |
+| `.agent/checkpoint.md` | Latest resumable session checkpoint. |
+| `.agent/subagents/` | Project-defined subagent profiles. |
+| `.agent/workflows/` | Workflow definitions for `/compose`. |
+| `.agent/skills/` | Reusable project skills. |
+| `.agent/state/` | Local state and indexes; має залишатися gitignored. |
+
+## Внесок
+
+Якщо хочете зробити внесок, прочитайте [CONTRIBUTING.md](./CONTRIBUTING.md) перед відкриттям pull request. Оскільки Minerva Code є fork, чітко зазначайте, чи зміна належить до Minerva layer, upstream-compatible OpenCode runtime або compatibility boundary між ними.

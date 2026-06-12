@@ -1,0 +1,48 @@
+name: compose-debug
+description: Structured debugging workflow.
+inputs:
+  - name: failure
+    required: true
+    description: Description of the bug, error message, or failing test
+steps:
+  - id: reproduce
+    agent: debugger
+    mode: plan
+    description: Reproduce and understand the failure
+    output: reproduction
+
+  - id: localize
+    agent: debugger
+    mode: plan
+    description: Localize the bug to specific files and lines
+    input_from: [reproduction]
+    output: localization
+
+  - id: root_cause
+    agent: debugger
+    mode: plan
+    description: Identify the root cause
+    input_from: [localization]
+    output: root_cause_analysis
+
+  - id: patch
+    agent: build
+    mode: build
+    description: Apply the fix
+    input_from: [root_cause_analysis]
+    requires_approval: true
+    output: fix
+
+  - id: regression_test
+    agent: tester
+    mode: plan
+    description: Run regression tests to verify the fix
+    input_from: [fix]
+    output: test_results
+
+  - id: verify
+    agent: reviewer
+    mode: plan
+    description: Review the fix for correctness and completeness
+    input_from: [fix, test_results]
+    output: review_report

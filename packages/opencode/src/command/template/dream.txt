@@ -1,0 +1,61 @@
+Extract durable project knowledge from this session into .agent/MEMORY.md.
+
+This is the /dream command. It promotes important learnings from this session
+into long-term project memory. Follow this exact process:
+
+## Step 1: Gather session evidence
+
+Read the following sources:
+1. `.agent/checkpoint.md` — current session state
+2. `.agent/notes.md` — scratchpad content
+3. `.agent/tasks/` — task progress files (last 5 modified)
+4. Run `git diff --stat HEAD` to see what code was changed
+5. Run `git log --oneline -10` to see recent commits
+
+## Step 2: Extract memory candidates
+
+For each candidate item, determine:
+- **kind**: rule | decision | command | pitfall | preference | fact
+- **text**: the durable fact in 1-2 sentences
+- **target_section**: which MEMORY.md section it belongs in
+- **evidence**: what happened in this session that proves this is durable
+- **confidence**: 0-100 (how sure are you this is a lasting fact?)
+
+**Keep only:**
+- Repo conventions discovered (naming, patterns, style rules)
+- Setup and test commands that aren't documented
+- Architecture decisions made
+- Recurring pitfalls to avoid
+- User preferences that apply to future sessions
+- Facts likely useful in future sessions (not session-specific)
+
+**Reject:**
+- Secrets, API keys, passwords
+- Temporary hypotheses that were disproved
+- One-off terminal output
+- Stale or contradicted facts
+- Generic programming knowledge (not repo-specific)
+
+## Step 3: Show a reviewable diff
+
+Before writing anything, show the proposed changes as a diff:
+
+```
++++ .agent/MEMORY.md changes +++
+[Section: Commands]
++ `bun test --filter <name>` — run a single test by name
+
+[Section: Known Pitfalls]
++ Database migrations must be run with `NODE_ENV=test` to avoid production DB changes
+
+[Section: Superseded / Deprecated]
+~ [Superseded 2026-06-12] Old auth lived in src/auth/ → now in packages/api/src/auth/
+```
+
+$ARGUMENTS
+
+## Step 4: Apply (if approved)
+
+If `--yes` is in the arguments, apply immediately. Otherwise, ask the user to confirm the diff before writing.
+
+After applying, re-index the memory file by listing .agent/MEMORY.md to confirm it was updated.

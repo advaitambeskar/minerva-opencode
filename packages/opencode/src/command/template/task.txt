@@ -1,0 +1,24 @@
+Manage the task graph at .agent/tasks/.
+
+Available sub-commands:
+
+/task create "title" [description]  — Create a new top-level task (T1, T2, …)
+/task split T1 "child1" "child2"    — Break a task into subtasks (T1.1, T1.2, …)
+/task start T1.2                    — Mark a task as in_progress
+/task block T1.2 "reason"           — Mark a task as blocked
+/task done T1.2                     — Mark a task as done
+/task cancel T1.2 "reason"          — Mark a task as cancelled
+/task note T1.2 "note"              — Append a progress note
+/task tree                          — Show the full task tree
+/task checkpoint                    — Write a session checkpoint including task state
+
+Argument provided: $ARGUMENTS
+
+Parse the sub-command from the argument and execute it. For `/task tree`, read the tasks directory at .agent/tasks/ and show a tree view with status icons:
+- ○ todo
+- ● in_progress
+- ⊘ blocked
+- ✓ done
+- ✗ cancelled
+
+After each operation, show the updated task state.
