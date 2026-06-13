@@ -37,6 +37,8 @@ Minerva Code is a project-aware coding agent. It keeps the fast terminal workflo
 
 The goal is not just to answer one prompt. Minerva Code is designed to stay oriented across a real engineering project: remember decisions, reconstruct context after long sessions, split work into tasks, delegate to focused agents, and preserve enough state that future sessions can pick up where the last one stopped.
 
+See [How Minerva Code Compares](./COMPARISON.md) for a feature matrix against OpenCode, Cursor, Claude Code, and OpenAI Codex.
+
 ## Installation
 
 Minerva Code is currently developed from source. Published package names and some internal binaries may still contain `opencode` while the rebrand is in progress.
