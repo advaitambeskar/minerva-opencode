@@ -1,5 +1,5 @@
-import { AppConfig } from "@opencode-ai/stats-core/config"
-import { runtime } from "@opencode-ai/stats-core/runtime"
+import { AppConfig } from "@minerva-ai/stats-core/config"
+import { runtime } from "@minerva-ai/stats-core/runtime"
 import { Effect } from "effect"
 
 export async function GET() {

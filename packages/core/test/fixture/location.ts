@@ -1,6 +1,6 @@
-import { Location } from "@opencode-ai/core/location"
-import { Project } from "@opencode-ai/core/project"
-import { AbsolutePath } from "@opencode-ai/core/schema"
+import { Location } from "@minerva-ai/core/location"
+import { Project } from "@minerva-ai/core/project"
+import { AbsolutePath } from "@minerva-ai/core/schema"
 
 export function location(ref: Location.Ref, input: { projectDirectory?: AbsolutePath; vcs?: Project.Vcs } = {}) {
   return {

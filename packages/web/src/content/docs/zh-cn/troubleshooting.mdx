@@ -57,15 +57,15 @@ OpenCode Desktop 会在后台运行一个本地 OpenCode 服务器（即 `openco
 
 打开你的全局配置文件，查找 `plugin` 键。
 
-- **macOS/Linux**: `~/.config/opencode/opencode.jsonc`（或 `~/.config/opencode/opencode.json`）
-- **macOS/Linux**（旧版安装）: `~/.local/share/opencode/opencode.jsonc`
-- **Windows**: 按 `WIN+R` 并粘贴 `%USERPROFILE%\.config\opencode\opencode.jsonc`
+- **macOS/Linux**: `~/.config/opencode/minerva.jsonc`（或 `~/.config/opencode/minerva.json`）
+- **macOS/Linux**（旧版安装）: `~/.local/share/opencode/minerva.jsonc`
+- **Windows**: 按 `WIN+R` 并粘贴 `%USERPROFILE%\.config\opencode\minerva.jsonc`
 
 如果你配置了插件，请通过移除该键或将其设置为空数组来临时禁用它们：
 
 ```jsonc
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "plugin": [],
 }
 ```
@@ -111,13 +111,13 @@ OpenCode Desktop 可以启动自己的本地服务器（默认行为），也可
 
 #### 从配置中移除 `server.port` / `server.hostname`
 
-如果你的 `opencode.json(c)` 包含 `server` 部分，请临时移除该部分并重新启动桌面应用。
+如果你的 `minerva.json(c)` 包含 `server` 部分，请临时移除该部分并重新启动桌面应用。
 
 #### 检查环境变量
 
-如果你在环境中设置了 `OPENCODE_PORT`，桌面应用将尝试使用该端口作为本地服务器端口。
+如果你在环境中设置了 `MINERVA_PORT`，桌面应用将尝试使用该端口作为本地服务器端口。
 
-- 取消设置 `OPENCODE_PORT`（或选择一个空闲端口）并重新启动。
+- 取消设置 `MINERVA_PORT`（或选择一个空闲端口）并重新启动。
 
 ---
 
@@ -177,7 +177,7 @@ OpenCode Desktop 仅在以下情况下显示系统通知：
 
    报告 Bug 或请求功能的最佳方式是通过我们的 GitHub 仓库：
 
-   [**github.com/anomalyco/opencode/issues**](https://github.com/anomalyco/opencode/issues)
+   [**github.com/advaitambeskar/minerva-opencode/issues**](https://github.com/advaitambeskar/minerva-opencode/issues)
 
    在创建新 Issue 之前，请先搜索已有的 Issue，看看你的问题是否已被报告。
 

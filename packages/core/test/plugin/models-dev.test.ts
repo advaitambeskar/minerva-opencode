@@ -1,18 +1,18 @@
 import path from "path"
 import { describe, expect } from "bun:test"
 import { Effect, Layer } from "effect"
-import { Catalog } from "@opencode-ai/core/catalog"
-import { Integration } from "@opencode-ai/core/integration"
-import { Credential } from "@opencode-ai/core/credential"
-import { Database } from "@opencode-ai/core/database/database"
-import { EventV2 } from "@opencode-ai/core/event"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Location } from "@opencode-ai/core/location"
-import { ModelsDev } from "@opencode-ai/core/models-dev"
-import { PluginV2 } from "@opencode-ai/core/plugin"
-import { ModelsDevPlugin } from "@opencode-ai/core/plugin/models-dev"
-import { Policy } from "@opencode-ai/core/policy"
-import { AbsolutePath } from "@opencode-ai/core/schema"
+import { Catalog } from "@minerva-ai/core/catalog"
+import { Integration } from "@minerva-ai/core/integration"
+import { Credential } from "@minerva-ai/core/credential"
+import { Database } from "@minerva-ai/core/database/database"
+import { EventV2 } from "@minerva-ai/core/event"
+import { Flag } from "@minerva-ai/core/flag/flag"
+import { Location } from "@minerva-ai/core/location"
+import { ModelsDev } from "@minerva-ai/core/models-dev"
+import { PluginV2 } from "@minerva-ai/core/plugin"
+import { ModelsDevPlugin } from "@minerva-ai/core/plugin/models-dev"
+import { Policy } from "@minerva-ai/core/policy"
+import { AbsolutePath } from "@minerva-ai/core/schema"
 import { location } from "../fixture/location"
 import { testEffect } from "../lib/effect"
 
@@ -45,11 +45,11 @@ describe("ModelsDevPlugin", () => {
     Effect.acquireUseRelease(
       Effect.sync(() => {
         const previous = {
-          path: Flag.OPENCODE_MODELS_PATH,
-          disabled: Flag.OPENCODE_DISABLE_MODELS_FETCH,
+          path: Flag.MINERVA_MODELS_PATH,
+          disabled: Flag.MINERVA_DISABLE_MODELS_FETCH,
         }
-        Flag.OPENCODE_MODELS_PATH = path.join(import.meta.dir, "fixtures", "models-dev.json")
-        Flag.OPENCODE_DISABLE_MODELS_FETCH = true
+        Flag.MINERVA_MODELS_PATH = path.join(import.meta.dir, "fixtures", "models-dev.json")
+        Flag.MINERVA_DISABLE_MODELS_FETCH = true
         return previous
       }),
       () =>
@@ -73,8 +73,8 @@ describe("ModelsDevPlugin", () => {
         }).pipe(Effect.provide(ModelsDev.defaultLayer)),
       (previous) =>
         Effect.sync(() => {
-          Flag.OPENCODE_MODELS_PATH = previous.path
-          Flag.OPENCODE_DISABLE_MODELS_FETCH = previous.disabled
+          Flag.MINERVA_MODELS_PATH = previous.path
+          Flag.MINERVA_DISABLE_MODELS_FETCH = previous.disabled
         }),
     ),
   )

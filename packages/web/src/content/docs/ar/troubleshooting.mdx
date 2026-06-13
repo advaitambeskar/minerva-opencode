@@ -57,15 +57,15 @@ description: المشكلات الشائعة وكيفية حلها.
 
 افتح ملف الإعدادات العام وابحث عن المفتاح `plugin`.
 
-- **macOS/Linux**: `~/.config/opencode/opencode.jsonc` (أو `~/.config/opencode/opencode.json`)
-- **macOS/Linux** (عمليات تثبيت أقدم): `~/.local/share/opencode/opencode.jsonc`
-- **Windows**: اضغط `WIN+R` والصق `%USERPROFILE%\.config\opencode\opencode.jsonc`
+- **macOS/Linux**: `~/.config/opencode/minerva.jsonc` (أو `~/.config/opencode/minerva.json`)
+- **macOS/Linux** (عمليات تثبيت أقدم): `~/.local/share/opencode/minerva.jsonc`
+- **Windows**: اضغط `WIN+R` والصق `%USERPROFILE%\.config\opencode\minerva.jsonc`
 
 إذا كانت لديك إضافات مضبوطة، فقم بتعطيلها مؤقتا بإزالة المفتاح أو ضبطه على مصفوفة فارغة:
 
 ```jsonc
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "plugin": [],
 }
 ```
@@ -111,13 +111,13 @@ description: المشكلات الشائعة وكيفية حلها.
 
 #### إزالة `server.port` / `server.hostname` من الإعدادات
 
-إذا كان `opencode.json(c)` يحتوي على قسم `server`، فأزله مؤقتا ثم أعد تشغيل تطبيق سطح المكتب.
+إذا كان `minerva.json(c)` يحتوي على قسم `server`، فأزله مؤقتا ثم أعد تشغيل تطبيق سطح المكتب.
 
 #### تحقق من متغيرات البيئة
 
-إذا كان `OPENCODE_PORT` مضبوطا في بيئتك، فسيحاول تطبيق سطح المكتب استخدام ذلك المنفذ للخادم المحلي.
+إذا كان `MINERVA_PORT` مضبوطا في بيئتك، فسيحاول تطبيق سطح المكتب استخدام ذلك المنفذ للخادم المحلي.
 
-- أزل ضبط `OPENCODE_PORT` (أو اختر منفذا متاحا) ثم أعد التشغيل.
+- أزل ضبط `MINERVA_PORT` (أو اختر منفذا متاحا) ثم أعد التشغيل.
 
 ---
 
@@ -177,7 +177,7 @@ description: المشكلات الشائعة وكيفية حلها.
 
    أفضل طريقة للإبلاغ عن الأخطاء أو طلب الميزات هي عبر مستودعنا على GitHub:
 
-   [**github.com/anomalyco/opencode/issues**](https://github.com/anomalyco/opencode/issues)
+   [**github.com/advaitambeskar/minerva-opencode/issues**](https://github.com/advaitambeskar/minerva-opencode/issues)
 
    قبل إنشاء مشكلة جديدة، ابحث في المشكلات الموجودة لمعرفة ما إذا كانت مشكلتك قد تم الإبلاغ عنها بالفعل.
 

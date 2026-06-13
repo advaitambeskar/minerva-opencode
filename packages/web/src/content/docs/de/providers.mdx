@@ -33,9 +33,9 @@ config.
 
 Sie können die Base URL für jeden Anbieter anpassen, indem Sie die Option `baseURL` festlegen. Das ist nuetzlich, wenn Sie Proxy-Dienste oder benutzerdefinierte Endpunkte verwenden.
 
-```json title="opencode.json" {6}
+```json title="minerva.json" {6}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "anthropic": {
       "options": {
@@ -190,11 +190,11 @@ So verwenden Sie Amazon Bedrock mit OpenCode:
 
    #### Konfigurationsdatei (empfohlen)
 
-   Für eine projektspezifische oder dauerhafte Konfiguration verwenden Sie `opencode.json`:
+   Für eine projektspezifische oder dauerhafte Konfiguration verwenden Sie `minerva.json`:
 
-   ```json title="opencode.json"
+   ```json title="minerva.json"
    {
-     "$schema": "https://opencode.ai/config.json",
+     "$schema": "https://minerva.dev/config.json",
      "provider": {
        "amazon-bedrock": {
          "options": {
@@ -219,9 +219,9 @@ So verwenden Sie Amazon Bedrock mit OpenCode:
 
    Wenn Sie VPC-Endpunkte für Bedrock verwenden:
 
-   ```json title="opencode.json"
+   ```json title="minerva.json"
    {
-     "$schema": "https://opencode.ai/config.json",
+     "$schema": "https://minerva.dev/config.json",
      "provider": {
        "amazon-bedrock": {
          "options": {
@@ -263,9 +263,9 @@ So verwenden Sie Amazon Bedrock mit OpenCode:
 :::note
 Verwenden Sie für benutzerdefinierte Inferenzprofile den Modell- und Anbieternamen im Schlüssel und legen Sie die Eigenschaft `id` auf den Arn fest. Dadurch wird ein korrektes Caching sichergestellt:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "amazon-bedrock": {
       // ...
@@ -325,9 +325,9 @@ Wenn Sie bereits über einen API-Schlüssel verfügen, können Sie **API-Schlüs
 
 Sie können opencode so konfigurieren, dass es lokale Modelle über [Atomic Chat](https://atomic.chat) verwendet — eine Desktop-Anwendung, die lokale LLMs hinter einem OpenAI-kompatiblen API-Server bereitstellt (Standard-Endpunkt `http://127.0.0.1:1337/v1`).
 
-```json title="opencode.json" "atomic-chat" {5, 6, 8, 10-14}
+```json title="minerva.json" "atomic-chat" {5, 6, 8, 10-14}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "atomic-chat": {
       "npm": "@ai-sdk/openai-compatible",
@@ -553,9 +553,9 @@ Mit dem Cloudflare AI Gateway können Sie über einen einheitlichen Endpunkt auf
 
    Sie können Modelle auch über Ihre OpenCode-Konfiguration hinzufügen.
 
-   ```json title="opencode.json"
+   ```json title="minerva.json"
    {
-     "$schema": "https://opencode.ai/config.json",
+     "$schema": "https://minerva.dev/config.json",
      "provider": {
        "cloudflare-ai-gateway": {
          "models": {
@@ -757,11 +757,11 @@ um das Token im OpenCode-Authentifizierungsspeicher zu speichern.
 OpenCode verwendet ein kleines Modell für einige AI-Aufgaben wie das Generieren des Sitzungstitels.
 Es ist standardmäßig für die Verwendung von gpt-5-nano konfiguriert und wird von Zen gehostet. Zum Sperren von OpenCode
 Um nur Ihre eigene von GitLab gehostete Instanz zu verwenden, fügen Sie Folgendes zu Ihrer hinzu
-`opencode.json`-Datei. Es wird außerdem empfohlen, die Sitzungsfreigabe zu deaktivieren.
+`minerva.json`-Datei. Es wird außerdem empfohlen, die Sitzungsfreigabe zu deaktivieren.
 
 ```json
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "small_model": "gitlab/duo-chat-haiku-4-5",
   "share": "disabled"
 }
@@ -819,11 +819,11 @@ Weitere Dokumentation auf der [opencode-gitlab-auth](https://www.npmjs.com/packa
 
 ##### Konfiguration
 
-Anpassen über `opencode.json`:
+Anpassen über `minerva.json`:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "gitlab": {
       "options": {
@@ -838,9 +838,9 @@ Anpassen über `opencode.json`:
 
 So greifen Sie auf GitLab-Tools zu (Zusammenführungsanfragen, Probleme, Pipelines, CI/CD usw.):
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "plugin": ["opencode-gitlab-plugin"]
 }
 ```
@@ -1021,9 +1021,9 @@ Falls Sie eine Funktion oder ein Modell von Helicone sehen, das nicht automatisc
 
 Hier ist [Helicone's Model Directory](https://helicone.ai/models). Sie benötigen dies, um die IDs der Modelle abzurufen, die Sie hinzufügen möchten.
 
-```jsonc title="~/.config/opencode/opencode.jsonc"
+```jsonc title="~/.config/opencode/minerva.jsonc"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "helicone": {
       "npm": "@ai-sdk/openai-compatible",
@@ -1049,9 +1049,9 @@ Hier ist [Helicone's Model Directory](https://helicone.ai/models). Sie benötige
 
 Helicone unterstützt benutzerdefinierte Header für Funktionen wie Caching, Benutzerverfolgung und Sitzungsverwaltung. Fügen Sie sie mit `options.headers` zu Ihrer Anbieterkonfiguration hinzu:
 
-```jsonc title="~/.config/opencode/opencode.jsonc"
+```jsonc title="~/.config/opencode/minerva.jsonc"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "helicone": {
       "npm": "@ai-sdk/openai-compatible",
@@ -1078,7 +1078,7 @@ npm install -g opencode-helicone-session
 
 Fügen Sie es Ihrer Konfiguration hinzu.
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
   "plugin": ["opencode-helicone-session"]
 }
@@ -1103,9 +1103,9 @@ Alle verfügbaren Header finden Sie unter [Helicone Header Directory](https://do
 
 Sie können OpenCode für die Verwendung lokaler Modelle über das Dienstprogramm [llama.cpp's](https://github.com/ggml-org/llama.cpp) llama-server konfigurieren
 
-```json title="opencode.json" "llama.cpp" {5, 6, 8, 10-15}
+```json title="minerva.json" "llama.cpp" {5, 6, 8, 10-15}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "llama.cpp": {
       "npm": "@ai-sdk/openai-compatible",
@@ -1170,9 +1170,9 @@ IO.NET bietet 17-Modelle, die für verschiedene Anwendungsfälle optimiert sind:
 
 Sie können OpenCode über LM Studio für die Verwendung lokaler Modelle konfigurieren.
 
-```json title="opencode.json" "lmstudio" {5, 6, 8, 10-14}
+```json title="minerva.json" "lmstudio" {5, 6, 8, 10-14}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "lmstudio": {
       "npm": "@ai-sdk/openai-compatible",
@@ -1291,9 +1291,9 @@ Sie können OpenCode über Ollama für die Verwendung lokaler Modelle konfigurie
 Ollama kann sich automatisch für OpenCode konfigurieren. Weitere Informationen finden Sie unter [Ollama integration docs](https://docs.ollama.com/integrations/opencode).
 :::
 
-```json title="opencode.json" "ollama" {5, 6, 8, 10-14}
+```json title="minerva.json" "ollama" {5, 6, 8, 10-14}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
@@ -1453,9 +1453,9 @@ OpenCode Zen ist eine Liste getesteter und verifizierter Modelle, die vom OpenCo
 
    Sie können auch zusätzliche Modelle über Ihre OpenCode-Konfiguration hinzufügen.
 
-   ```json title="opencode.json" {6}
+   ```json title="minerva.json" {6}
    {
-     "$schema": "https://opencode.ai/config.json",
+     "$schema": "https://minerva.dev/config.json",
      "provider": {
        "openrouter": {
          "models": {
@@ -1468,9 +1468,9 @@ OpenCode Zen ist eine Liste getesteter und verifizierter Modelle, die vom OpenCo
 
 5. Sie können sie auch über Ihre OpenCode-Konfiguration anpassen. Hier ist ein Beispiel für die Angabe eines Anbieters
 
-   ```json title="opencode.json"
+   ```json title="minerva.json"
    {
-     "$schema": "https://opencode.ai/config.json",
+     "$schema": "https://minerva.dev/config.json",
      "provider": {
        "openrouter": {
          "models": {
@@ -1717,9 +1717,9 @@ Mit dem Vercel AI Gateway können Sie über einen einheitlichen Endpunkt auf Mod
 
 Sie können Modelle auch über Ihre OpenCode-Konfiguration anpassen. Hier ist ein Beispiel für die Angabe der Provider-Routing-Reihenfolge.
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "vercel": {
       "models": {
@@ -1827,9 +1827,9 @@ Einige nützliche Routing-Optionen:
 
    Sie können auch zusätzliche Modelle über Ihre OpenCode-Konfiguration hinzufügen.
 
-   ```json title="opencode.json" {6}
+   ```json title="minerva.json" {6}
    {
-     "$schema": "https://opencode.ai/config.json",
+     "$schema": "https://minerva.dev/config.json",
      "provider": {
        "zenmux": {
          "models": {
@@ -1886,18 +1886,18 @@ Sie können jeden OpenAI-kompatiblen Anbieter mit OpenCode verwenden. Die meiste
 
    ┌  Add credential
    │
-   ▲  This only stores a credential for myprovider - you will need to configure it in opencode.json, check the docs for examples.
+   ▲  This only stores a credential for myprovider - you will need to configure it in minerva.json, check the docs for examples.
    │
    ◇  Enter your API key
    │  sk-...
    └
    ```
 
-4. Erstellen oder aktualisieren Sie Ihre `opencode.json`-Datei in Ihrem Projektverzeichnis:
+4. Erstellen oder aktualisieren Sie Ihre `minerva.json`-Datei in Ihrem Projektverzeichnis:
 
-   ```json title="opencode.json" ""myprovider"" {5-15}
+   ```json title="minerva.json" ""myprovider"" {5-15}
    {
-     "$schema": "https://opencode.ai/config.json",
+     "$schema": "https://minerva.dev/config.json",
      "provider": {
        "myprovider": {
          "npm": "@ai-sdk/openai-compatible",
@@ -1933,9 +1933,9 @@ Sie können jeden OpenAI-kompatiblen Anbieter mit OpenCode verwenden. Die meiste
 
 Hier ist ein Beispiel für die Einstellung der Optionen `apiKey`, `headers` und Modell `limit`.
 
-```json title="opencode.json" {9,11,17-20}
+```json title="minerva.json" {9,11,17-20}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "provider": {
     "myprovider": {
       "npm": "@ai-sdk/openai-compatible",

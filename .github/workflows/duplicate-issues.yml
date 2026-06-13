@@ -20,13 +20,13 @@ jobs:
       - uses: ./.github/actions/setup-bun
 
       - name: Install opencode
-        run: curl -fsSL https://opencode.ai/install | bash
+        run: curl -fsSL https://minerva.dev/install | bash
 
       - name: Check duplicates and compliance
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          MINERVA_API_KEY: ${{ secrets.MINERVA_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENCODE_PERMISSION: |
+          MINERVA_PERMISSION: |
             {
               "bash": {
                 "*": "deny",
@@ -35,7 +35,7 @@ jobs:
               "webfetch": "deny"
             }
         run: |
-          opencode run -m opencode/claude-sonnet-4-6 "A new issue has been created:
+          minerva run -m opencode/claude-sonnet-4-6 "A new issue has been created:
 
           Issue number: ${{ github.event.issue.number }}
 
@@ -132,13 +132,13 @@ jobs:
       - uses: ./.github/actions/setup-bun
 
       - name: Install opencode
-        run: curl -fsSL https://opencode.ai/install | bash
+        run: curl -fsSL https://minerva.dev/install | bash
 
       - name: Recheck compliance
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          MINERVA_API_KEY: ${{ secrets.MINERVA_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENCODE_PERMISSION: |
+          MINERVA_PERMISSION: |
             {
               "bash": {
                 "*": "deny",
@@ -147,7 +147,7 @@ jobs:
               "webfetch": "deny"
             }
         run: |
-          opencode run -m opencode/claude-sonnet-4-6 "Issue #${{ github.event.issue.number }} was previously flagged as non-compliant and has been edited.
+          minerva run -m opencode/claude-sonnet-4-6 "Issue #${{ github.event.issue.number }} was previously flagged as non-compliant and has been edited.
 
           Lookup this issue with gh issue view ${{ github.event.issue.number }}.
 

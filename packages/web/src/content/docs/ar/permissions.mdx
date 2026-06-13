@@ -23,9 +23,9 @@ description: تحكّم في الإجراءات التي تتطلب موافقة
 
 يمكنك تعيين الأذونات بشكل عام (باستخدام `*`) ثم تجاوزها لأدوات محددة.
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "*": "ask",
     "bash": "allow",
@@ -36,9 +36,9 @@ description: تحكّم في الإجراءات التي تتطلب موافقة
 
 يمكنك أيضًا تعيين جميع الأذونات دفعة واحدة:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": "allow"
 }
 ```
@@ -49,9 +49,9 @@ description: تحكّم في الإجراءات التي تتطلب موافقة
 
 في معظم الأذونات، يمكنك استخدام كائن لتطبيق إجراءات مختلفة بناءً على مُدخلات الأداة.
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "bash": {
       "*": "ask",
@@ -94,9 +94,9 @@ description: تحكّم في الإجراءات التي تتطلب موافقة
 
 على سبيل المثال، يتيح هذا الوصول إلى كل ما يقع تحت `~/projects/personal/`:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "external_directory": {
       "~/projects/personal/**": "allow"
@@ -107,9 +107,9 @@ description: تحكّم في الإجراءات التي تتطلب موافقة
 
 أي دليل مسموح به هنا يرث نفس القيم الافتراضية لمساحة العمل الحالية. وبما أن [`read` افتراضيًا هو `allow`](#defaults)، فإن عمليات القراءة تكون مسموحة أيضًا للعناصر ضمن `external_directory` ما لم يتم تجاوز ذلك. أضِف قواعد صريحة عندما يجب تقييد أداة ما في هذه المسارات، مثل حظر التعديلات مع الإبقاء على القراءة:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "external_directory": {
       "~/projects/personal/**": "allow"
@@ -152,7 +152,7 @@ description: تحكّم في الإجراءات التي تتطلب موافقة
 - `doom_loop` و`external_directory` افتراضيًا تكون `"ask"`.
 - `read` هو `"allow"`، لكن ملفات `.env` تكون مرفوضة افتراضيًا:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
   "permission": {
     "read": {
@@ -187,9 +187,9 @@ description: تحكّم في الإجراءات التي تتطلب موافقة
 ارجع إلى قسم [قواعد دقيقة (صيغة الكائن)](#granular-rules-object-syntax) للحصول على أمثلة أكثر تفصيلًا حول مطابقة الأنماط.
 :::
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "bash": {
       "*": "ask",

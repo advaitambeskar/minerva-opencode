@@ -27,7 +27,7 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-Minerva Code 派生自 [OpenCode](https://github.com/anomalyco/opencode)，并且不隶属于 OpenCode 项目。
+Minerva Code 派生自 [OpenCode](https://github.com/advaitambeskar/minerva-opencode)，并且不隶属于 OpenCode 项目。
 
 ---
 
@@ -51,7 +51,7 @@ bun dev
 常用开发命令：
 
 ```bash
-bun dev          # run the CLI/TUI from packages/opencode
+bun dev          # run the CLI/TUI from packages/minerva
 bun dev:web      # run the web app
 bun dev:desktop  # run the desktop app
 bun lint         # run oxlint

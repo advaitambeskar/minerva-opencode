@@ -57,15 +57,15 @@ Se l'app desktop va in crash all'avvio, si blocca o si comporta in modo strano, 
 
 Apri il tuo file di configurazione globale e cerca la chiave `plugin`.
 
-- **macOS/Linux**: `~/.config/opencode/opencode.jsonc` (o `~/.config/opencode/opencode.json`)
-- **macOS/Linux** (installazioni vecchie): `~/.local/share/opencode/opencode.jsonc`
-- **Windows**: premi `WIN+R` e incolla `%USERPROFILE%\.config\opencode\opencode.jsonc`
+- **macOS/Linux**: `~/.config/opencode/minerva.jsonc` (o `~/.config/opencode/minerva.json`)
+- **macOS/Linux** (installazioni vecchie): `~/.local/share/opencode/minerva.jsonc`
+- **Windows**: premi `WIN+R` e incolla `%USERPROFILE%\.config\opencode\minerva.jsonc`
 
 Se hai plugin configurati, disabilitali temporaneamente rimuovendo la chiave o impostandola a un array vuoto:
 
 ```jsonc
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "plugin": [],
 }
 ```
@@ -111,13 +111,13 @@ Dalla schermata Home, fai clic sul nome del server (con il pallino di stato) per
 
 #### Rimuovi `server.port` / `server.hostname` dalla tua configurazione
 
-Se il tuo `opencode.json(c)` contiene una sezione `server`, rimuovila temporaneamente e riavvia l'app desktop.
+Se il tuo `minerva.json(c)` contiene una sezione `server`, rimuovila temporaneamente e riavvia l'app desktop.
 
 #### Controlla le variabili d'ambiente
 
-Se hai `OPENCODE_PORT` impostato nell'ambiente, l'app desktop provera a usare quella porta per il server locale.
+Se hai `MINERVA_PORT` impostato nell'ambiente, l'app desktop provera a usare quella porta per il server locale.
 
-- Rimuovi `OPENCODE_PORT` (o scegli una porta libera) e riavvia.
+- Rimuovi `MINERVA_PORT` (o scegli una porta libera) e riavvia.
 
 ---
 
@@ -177,7 +177,7 @@ Se riscontri problemi con OpenCode:
 
    Il modo migliore per segnalare bug o richiedere funzionalita e tramite il nostro repository GitHub:
 
-   [**github.com/anomalyco/opencode/issues**](https://github.com/anomalyco/opencode/issues)
+   [**github.com/advaitambeskar/minerva-opencode/issues**](https://github.com/advaitambeskar/minerva-opencode/issues)
 
    Prima di creare una nuova issue, cerca tra quelle esistenti per vedere se il problema e gia stato segnalato.
 

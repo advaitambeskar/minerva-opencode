@@ -1,6 +1,6 @@
-# OpenCode Desktop
+# Minerva Desktop
 
-The OpenCode Desktop app, built with Electron.
+The Minerva Desktop app, built with Electron.
 
 ## Development
 

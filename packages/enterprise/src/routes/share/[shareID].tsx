@@ -1,31 +1,31 @@
-import { Message, Model, Part, Session, SessionStatus, SnapshotFileDiff, UserMessage } from "@opencode-ai/sdk/v2"
-import { SessionTurn } from "@opencode-ai/ui/session-turn"
-import { SessionReview } from "@opencode-ai/ui/session-review"
-import { DataProvider } from "@opencode-ai/ui/context"
-import { FileComponentProvider } from "@opencode-ai/ui/context/file"
-import { WorkerPoolProvider } from "@opencode-ai/ui/context/worker-pool"
+import { Message, Model, Part, Session, SessionStatus, SnapshotFileDiff, UserMessage } from "@minerva-ai/sdk/v2"
+import { SessionTurn } from "@minerva-ai/ui/session-turn"
+import { SessionReview } from "@minerva-ai/ui/session-review"
+import { DataProvider } from "@minerva-ai/ui/context"
+import { FileComponentProvider } from "@minerva-ai/ui/context/file"
+import { WorkerPoolProvider } from "@minerva-ai/ui/context/worker-pool"
 import { createAsync, query, useParams } from "@solidjs/router"
 import { createMemo, createSignal, ErrorBoundary, For, Match, Show, Switch } from "solid-js"
 import { Share } from "~/core/share"
-import { Logo, Mark } from "@opencode-ai/ui/logo"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
-import { iife } from "@opencode-ai/core/util/iife"
-import { Binary } from "@opencode-ai/core/util/binary"
-import { NamedError } from "@opencode-ai/core/util/error"
+import { Logo, Mark } from "@minerva-ai/ui/logo"
+import { IconButton } from "@minerva-ai/ui/icon-button"
+import { ProviderIcon } from "@minerva-ai/ui/provider-icon"
+import { iife } from "@minerva-ai/core/util/iife"
+import { Binary } from "@minerva-ai/core/util/binary"
+import { NamedError } from "@minerva-ai/core/util/error"
 import { DateTime } from "luxon"
 import { createStore } from "solid-js/store"
 import NotFound from "../[...404]"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { MessageNav } from "@opencode-ai/ui/message-nav"
-import { FileSSR } from "@opencode-ai/ui/file-ssr"
+import { Tabs } from "@minerva-ai/ui/tabs"
+import { MessageNav } from "@minerva-ai/ui/message-nav"
+import { FileSSR } from "@minerva-ai/ui/file-ssr"
 import { clientOnly } from "@solidjs/start"
 import { Meta, Title } from "@solidjs/meta"
 import { Base64 } from "js-base64"
 import { getRequestEvent } from "solid-js/web"
 
 const ClientOnlyWorkerPoolProvider = clientOnly(() =>
-  import("@opencode-ai/ui/pierre/worker").then((m) => ({
+  import("@minerva-ai/ui/pierre/worker").then((m) => ({
     default: (props: { children: any }) => (
       <WorkerPoolProvider pools={m.getWorkerPools()}>{props.children}</WorkerPoolProvider>
     ),
@@ -281,7 +281,7 @@ export default function () {
                             <div class="flex gap-3 items-center">
                               <IconButton
                                 as={"a"}
-                                href="https://github.com/anomalyco/opencode"
+                                href="https://github.com/advaitambeskar/minerva-opencode"
                                 target="_blank"
                                 icon="github"
                                 variant="ghost"

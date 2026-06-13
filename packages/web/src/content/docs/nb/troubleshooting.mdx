@@ -57,15 +57,15 @@ Hvis skrivebordsappen krasjer ved oppstart, henger eller oppfører seg merkelig,
 
 Åpne den globale konfigurasjonsfilen og se etter en `plugin`-nøkkel.
 
-- **macOS/Linux**: `~/.config/opencode/opencode.jsonc` (eller `~/.config/opencode/opencode.json`)
-- **macOS/Linux** (eldre installasjoner): `~/.local/share/opencode/opencode.jsonc`
-- **Windows**: Trykk `WIN+R` og lim inn `%USERPROFILE%\.config\opencode\opencode.jsonc`
+- **macOS/Linux**: `~/.config/opencode/minerva.jsonc` (eller `~/.config/opencode/minerva.json`)
+- **macOS/Linux** (eldre installasjoner): `~/.local/share/opencode/minerva.jsonc`
+- **Windows**: Trykk `WIN+R` og lim inn `%USERPROFILE%\.config\opencode\minerva.jsonc`
 
 Hvis du har konfigurert plugins, deaktiver dem midlertidig ved å fjerne nøkkelen eller sette den til en tom matrise:
 
 ```jsonc
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "plugin": [],
 }
 ```
@@ -111,13 +111,13 @@ Fra startskjermen klikker du på servernavnet (med statusprikken) for å åpne s
 
 #### Fjern `server.port` / `server.hostname` fra konfigurasjonen din
 
-Hvis `opencode.json(c)` inneholder en `server`-del, fjern den midlertidig og start skrivebordsappen på nytt.
+Hvis `minerva.json(c)` inneholder en `server`-del, fjern den midlertidig og start skrivebordsappen på nytt.
 
 #### Sjekk miljøvariabler
 
-Hvis du har `OPENCODE_PORT` satt i miljøet ditt, vil skrivebordsappen prøve å bruke den porten for den lokale serveren.
+Hvis du har `MINERVA_PORT` satt i miljøet ditt, vil skrivebordsappen prøve å bruke den porten for den lokale serveren.
 
-- Deaktiver `OPENCODE_PORT` (eller velg en ledig port) og start på nytt.
+- Deaktiver `MINERVA_PORT` (eller velg en ledig port) og start på nytt.
 
 ---
 

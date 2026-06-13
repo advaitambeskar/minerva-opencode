@@ -27,7 +27,7 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-Το Minerva Code είναι fork του [OpenCode](https://github.com/anomalyco/opencode) και δεν συνδέεται με το έργο OpenCode.
+Το Minerva Code είναι fork του [OpenCode](https://github.com/advaitambeskar/minerva-opencode) και δεν συνδέεται με το έργο OpenCode.
 
 ---
 
@@ -51,7 +51,7 @@ bun dev
 Χρήσιμες εντολές ανάπτυξης:
 
 ```bash
-bun dev          # run the CLI/TUI from packages/opencode
+bun dev          # run the CLI/TUI from packages/minerva
 bun dev:web      # run the web app
 bun dev:desktop  # run the desktop app
 bun lint         # run oxlint

@@ -1,16 +1,16 @@
 export * from "./client.js"
 export * from "./server.js"
 
-import { createOpencodeClient } from "./client.js"
-import { createOpencodeServer } from "./server.js"
+import { createMinervaClient } from "./client.js"
+import { createMinervaServer } from "./server.js"
 import type { ServerOptions } from "./server.js"
 
-export async function createOpencode(options?: ServerOptions) {
-  const server = await createOpencodeServer({
+export async function createMinerva(options?: ServerOptions) {
+  const server = await createMinervaServer({
     ...options,
   })
 
-  const client = createOpencodeClient({
+  const client = createMinervaClient({
     baseUrl: server.url,
   })
 
@@ -19,3 +19,5 @@ export async function createOpencode(options?: ServerOptions) {
     server,
   }
 }
+
+export const createOpencode = createMinerva

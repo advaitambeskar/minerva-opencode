@@ -23,9 +23,9 @@ Hver tilladelsesregel løses til en af:
 
 Du kan indstille tilladelser globalt (med `*`) og tilsidesætte specifikke værktøjer.
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "*": "ask",
     "bash": "allow",
@@ -36,9 +36,9 @@ Du kan indstille tilladelser globalt (med `*`) og tilsidesætte specifikke værk
 
 Du kan også indstille alle tilladelser på én gang:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": "allow"
 }
 ```
@@ -49,9 +49,9 @@ Du kan også indstille alle tilladelser på én gang:
 
 For de fleste tilladelser kan du bruge et objekt til at anvende forskellige handlinger baseret på værktøjsinputtet.
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "bash": {
       "*": "ask",
@@ -94,9 +94,9 @@ Hjemmeudvidelse (som `~/...`) påvirker kun, hvordan et mønster skrives. Det g�
 
 For eksempel giver dette adgang til alt under `~/projects/personal/`:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "external_directory": {
       "~/projects/personal/**": "allow"
@@ -107,9 +107,9 @@ For eksempel giver dette adgang til alt under `~/projects/personal/`:
 
 Enhver mappe, der er tilladt her, arver de samme standarder som det aktuelle arbejdsområde. Siden [`read` defaults to `allow`](#defaults), er læsninger også tilladt for poster under `external_directory`, medmindre de tilsidesættes. Tilføj eksplicitte regler, når et værktøj skal begrænses i disse stier, såsom blokering af redigeringer, mens læsninger bevares:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "external_directory": {
       "~/projects/personal/**": "allow"
@@ -152,7 +152,7 @@ Hvis du ikke angiver noget, starter OpenCode fra tilladelige standardindstilling
 - `doom_loop` og `external_directory` er som standard `"ask"`.
 - `read` er `"allow"`, men `.env` filer nægtes som standard:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
   "permission": {
     "read": {
@@ -187,9 +187,9 @@ Du kan tilsidesætte tilladelser pr. agent. Agenttilladelser flettes med den glo
 Se afsnittet [Granular Rules (Object Syntax)](#granular-rules-object-syntax) ovenfor for mere detaljerede mønstermatchningseksempler.
 :::
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "permission": {
     "bash": {
       "*": "ask",

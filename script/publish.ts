@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { Script } from "@opencode-ai/script"
+import { Script } from "@minerva-ai/script"
 import { $ } from "bun"
 import { fileURLToPath } from "url"
 
@@ -36,7 +36,7 @@ if (Script.release && !Script.preview) {
 await prepareReleaseFiles()
 
 console.log("\n=== cli ===\n")
-await $`bun ./packages/opencode/script/publish.ts`
+await $`bun ./packages/minerva/script/publish.ts`
 
 console.log("\n=== preview cli ===\n")
 await $`bun ./packages/cli/script/publish.ts`
@@ -59,10 +59,10 @@ if (Script.release && !Script.preview) {
   await $`git push origin refs/tags/${tag} --force-with-lease --no-verify`
   await new Promise((resolve) => setTimeout(resolve, 5_000))
   await $`git fetch origin`
-  await $`git checkout -B dev origin/dev`
+  await $`git checkout -B main origin/main`
   await prepareReleaseFiles()
   await $`git commit -am "sync release versions for ${tag}"`
-  await $`git push origin HEAD:dev --no-verify`
+  await $`git push origin HEAD:main --no-verify`
 }
 
 if (Script.release) {

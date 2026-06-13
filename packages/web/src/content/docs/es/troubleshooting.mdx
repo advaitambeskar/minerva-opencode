@@ -57,15 +57,15 @@ Si la aplicación de escritorio falla al iniciarse, se bloquea o se comporta de 
 
 Abra su archivo de configuración global y busque una clave `plugin`.
 
-- **macOS/Linux**: `~/.config/opencode/opencode.jsonc` (o `~/.config/opencode/opencode.json`)
-- **macOS/Linux** (instalaciones anteriores): `~/.local/share/opencode/opencode.jsonc`
-- **Windows**: Presione `WIN+R` y pegue `%USERPROFILE%\.config\opencode\opencode.jsonc`
+- **macOS/Linux**: `~/.config/opencode/minerva.jsonc` (o `~/.config/opencode/minerva.json`)
+- **macOS/Linux** (instalaciones anteriores): `~/.local/share/opencode/minerva.jsonc`
+- **Windows**: Presione `WIN+R` y pegue `%USERPROFILE%\.config\opencode\minerva.jsonc`
 
 Si tiene complementos configurados, desactívelos temporalmente eliminando la clave o configurándola en una matriz vacía:
 
 ```jsonc
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "plugin": [],
 }
 ```
@@ -111,13 +111,13 @@ Desde la pantalla de inicio, haga clic en el nombre del servidor (con el punto d
 
 #### Elimina `server.port` / `server.hostname` de tu configuración
 
-Si su `opencode.json(c)` contiene una sección `server`, elimínela temporalmente y reinicie la aplicación de escritorio.
+Si su `minerva.json(c)` contiene una sección `server`, elimínela temporalmente y reinicie la aplicación de escritorio.
 
 #### Verificar variables de entorno
 
-Si tiene `OPENCODE_PORT` configurado en su entorno, la aplicación de escritorio intentará usar ese puerto para el servidor local.
+Si tiene `MINERVA_PORT` configurado en su entorno, la aplicación de escritorio intentará usar ese puerto para el servidor local.
 
-- Desarme `OPENCODE_PORT` (o elija un puerto libre) y reinicie.
+- Desarme `MINERVA_PORT` (o elija un puerto libre) y reinicie.
 
 ---
 
@@ -177,7 +177,7 @@ Si tiene problemas con OpenCode:
 
    La mejor manera de informar errores o solicitar funciones es a través de nuestro repositorio GitHub:
 
-   [**github.com/anomalyco/opencode/issues**](https://github.com/anomalyco/opencode/issues)
+   [**github.com/advaitambeskar/minerva-opencode/issues**](https://github.com/advaitambeskar/minerva-opencode/issues)
 
    Antes de crear un nuevo problema, busque los problemas existentes para ver si su problema ya ha sido informado.
 

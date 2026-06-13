@@ -1,6 +1,6 @@
-import type { DesktopMenuAction } from "@opencode-ai/app/desktop-menu"
-import type { WslServersPlatform } from "@opencode-ai/app/wsl/types"
-import type { UpdaterState } from "@opencode-ai/app/updater"
+import type { DesktopMenuAction } from "@minerva-ai/app/desktop-menu"
+import type { WslServersPlatform } from "@minerva-ai/app/wsl/types"
+import type { UpdaterState } from "@minerva-ai/app/updater"
 export type {
   WslDistroProbe,
   WslInstalledDistro,
@@ -13,7 +13,7 @@ export type {
   WslServerRuntime,
   WslServersEvent,
   WslServersState,
-} from "@opencode-ai/app/wsl/types"
+} from "@minerva-ai/app/wsl/types"
 
 export type ServerReadyData = {
   url: string

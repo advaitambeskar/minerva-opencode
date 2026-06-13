@@ -24,6 +24,7 @@ import { ConfigToolOutput } from "./config/tool-output"
 import { ConfigWatcher } from "./config/watcher"
 import { ConfigV1 } from "./v1/config/config"
 import { ConfigMigrateV1 } from "./v1/config/migrate"
+import { CONFIG_NAMES } from "./brand"
 
 export class Info extends Schema.Class<Info>("Config.Info")({
   $schema: Schema.optional(Schema.String).annotate({
@@ -129,7 +130,7 @@ export interface Interface {
   readonly entries: () => Effect.Effect<Entry[]>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/v2/Config") {}
+export class Service extends Context.Service<Service, Interface>()("@minerva/v2/Config") {}
 
 export const layer = Layer.effect(
   Service,
@@ -138,9 +139,8 @@ export const layer = Layer.effect(
     const global = yield* Global.Service
     const location = yield* Location.Service
     const policy = yield* Policy.Service
-    const names = ["config.json", "opencode.json", "opencode.jsonc"]
-    // Canonical project dir is .agent/; .opencode/ is kept as a deprecated fallback.
-    const projectDirNames = [".agent", ".opencode"]
+    const names = [...CONFIG_NAMES]
+    const projectDirNames = [".agent"]
     const decodeOptions = { errors: "all", onExcessProperty: "ignore", propertyOrder: "original" } as const
     const decodeInfo = Schema.decodeUnknownOption(Info, decodeOptions)
     const decodeV1Info = Schema.decodeUnknownOption(ConfigV1.Info, decodeOptions)
@@ -177,7 +177,6 @@ export const layer = Layer.effect(
     const locationIsGlobal = path.resolve(location.directory) === path.resolve(global.config)
     // Read configuration once when this location opens. Later calls reuse these
     // values until the location is reopened.
-    // Search .agent first (canonical), then .opencode (deprecated fallback).
     const discovered = locationIsGlobal
       ? []
       : yield* fs
@@ -187,8 +186,6 @@ export const layer = Layer.effect(
             stop: location.project.directory,
           })
           .pipe(Effect.orDie)
-    // Deduplicate: if both .agent and .opencode exist at the same level, prefer .agent.
-    // `discovered` is ordered nearest-first; we keep the first project dir seen per level.
     const seenLevels = new Set<string>()
     const projectDirs = discovered.filter((item) => {
       if (!isProjectDir(item)) return false

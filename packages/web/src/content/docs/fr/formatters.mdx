@@ -59,9 +59,9 @@ Ce processus se déroule en arrière-plan, garantissant que vos styles de code s
 
 Vous pouvez personnaliser les formateurs via la section `formatter` de votre configuration OpenCode.
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "formatter": {}
 }
 ```
@@ -83,18 +83,18 @@ Regardons quelques exemples.
 
 Pour désactiver **tous** les formateurs globalement, définissez `formatter` sur `false` :
 
-```json title="opencode.json" {3}
+```json title="minerva.json" {3}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "formatter": false
 }
 ```
 
 Pour désactiver un formateur **spécifique**, définissez `disabled` sur `true` :
 
-```json title="opencode.json" {5}
+```json title="minerva.json" {5}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "formatter": {
     "prettier": {
       "disabled": true
@@ -109,9 +109,9 @@ Pour désactiver un formateur **spécifique**, définissez `disabled` sur `true`
 
 Vous pouvez remplacer les formateurs intégrés ou en ajouter de nouveaux en spécifiant la commande, les variables d'environnement et les extensions de fichier :
 
-```json title="opencode.json" {4-14}
+```json title="minerva.json" {4-14}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "formatter": {
     "prettier": {
       "command": ["npx", "prettier", "--write", "$FILE"],

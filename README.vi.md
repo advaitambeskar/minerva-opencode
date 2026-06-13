@@ -27,7 +27,7 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-Minerva Code là một fork của [OpenCode](https://github.com/anomalyco/opencode) và không liên kết với dự án OpenCode.
+Minerva Code là một fork của [OpenCode](https://github.com/advaitambeskar/minerva-opencode) và không liên kết với dự án OpenCode.
 
 ---
 
@@ -51,7 +51,7 @@ bun dev
 Các lệnh phát triển hữu ích:
 
 ```bash
-bun dev          # run the CLI/TUI from packages/opencode
+bun dev          # run the CLI/TUI from packages/minerva
 bun dev:web      # run the web app
 bun dev:desktop  # run the desktop app
 bun lint         # run oxlint

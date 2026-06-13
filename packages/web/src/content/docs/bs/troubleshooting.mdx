@@ -57,15 +57,15 @@ Ako se desktop aplikacija ruši pri pokretanju, visi ili se čudno ponaša, poč
 
 Otvorite svoju globalnu konfiguracijsku datoteku i potražite ključ `plugin`.
 
-- **macOS/Linux**: `~/.config/opencode/opencode.jsonc` (ili `~/.config/opencode/opencode.json`)
-- **macOS/Linux** (starije instalacije): `~/.local/share/opencode/opencode.jsonc`
-- **Windows**: Pritisnite `WIN+R` i zalijepite `%USERPROFILE%\.config\opencode\opencode.jsonc`
+- **macOS/Linux**: `~/.config/opencode/minerva.jsonc` (ili `~/.config/opencode/minerva.json`)
+- **macOS/Linux** (starije instalacije): `~/.local/share/opencode/minerva.jsonc`
+- **Windows**: Pritisnite `WIN+R` i zalijepite `%USERPROFILE%\.config\opencode\minerva.jsonc`
 
 Ako imate konfigurirane dodatke, privremeno ih onemogućite uklanjanjem ključa ili postavljanjem na prazan niz:
 
 ```jsonc
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "plugin": [],
 }
 ```
@@ -111,13 +111,13 @@ Na početnom ekranu kliknite na ime servera (sa tačkom statusa) da otvorite bir
 
 #### Uklonite `server.port` / `server.hostname` iz vaše konfiguracije
 
-Ako vaš `opencode.json(c)` sadrži odjeljak `server`, privremeno ga uklonite i ponovo pokrenite desktop aplikaciju.
+Ako vaš `minerva.json(c)` sadrži odjeljak `server`, privremeno ga uklonite i ponovo pokrenite desktop aplikaciju.
 
 #### Provjerite varijable okruženja
 
-Ako ste postavili `OPENCODE_PORT` u svom okruženju, desktop aplikacija će pokušati da koristi taj port za lokalni server.
+Ako ste postavili `MINERVA_PORT` u svom okruženju, desktop aplikacija će pokušati da koristi taj port za lokalni server.
 
-- Poništite `OPENCODE_PORT` (ili odaberite slobodan port) i ponovo pokrenite.
+- Poništite `MINERVA_PORT` (ili odaberite slobodan port) i ponovo pokrenite.
 
 ---
 
@@ -177,7 +177,7 @@ Ako imate problema s OpenCode:
 
    Najbolji način da prijavite greške ili zatražite funkcije je putem našeg GitHub spremišta:
 
-   [**github.com/anomalyco/opencode/issues**](https://github.com/anomalyco/opencode/issues)
+   [**github.com/advaitambeskar/minerva-opencode/issues**](https://github.com/advaitambeskar/minerva-opencode/issues)
 
    Prije kreiranja novog problema, pretražite postojeće probleme da vidite je li vaš problem već prijavljen.
 

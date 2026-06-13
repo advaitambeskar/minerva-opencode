@@ -2,7 +2,7 @@
 
 ## Sources
 
-- PR #15835: https://github.com/anomalyco/opencode/pull/15835
+- PR #15835: https://github.com/advaitambeskar/minerva-opencode/pull/15835
 
 ## Do Not Translate (Locale Additions)
 

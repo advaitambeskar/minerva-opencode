@@ -27,7 +27,7 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-Minerva Code is forked from [OpenCode](https://github.com/anomalyco/opencode) and is not affiliated with the OpenCode project.
+Minerva Code is forked from [OpenCode](https://github.com/advaitambeskar/minerva-opencode) and is not affiliated with the OpenCode project.
 
 ---
 
@@ -41,7 +41,7 @@ See [How Minerva Code Compares](./COMPARISON.md) for a feature matrix against Op
 
 ## Installation
 
-Minerva Code is currently developed from source. Published package names and some internal binaries may still contain `opencode` while the rebrand is in progress.
+Minerva Code is now independently branded and distributed as `minerva`.
 
 ```bash
 git clone https://github.com/advaitambeskar/minerva-opencode.git
@@ -53,7 +53,7 @@ bun dev
 Useful development commands:
 
 ```bash
-bun dev          # run the CLI/TUI from packages/opencode
+bun dev          # run the CLI/TUI from packages/minerva
 bun dev:web      # run the web app
 bun dev:desktop  # run the desktop app
 bun lint         # run oxlint
@@ -167,7 +167,7 @@ Type `/` inside Minerva Code to discover commands. Important commands include:
 
 ## The `.agent/` Project Brain
 
-`.agent/` is the canonical per-project configuration and state directory. `.opencode/` may still be recognized as a deprecated fallback, but new Minerva Code projects should use `.agent/`.
+`.agent/` is the canonical per-project configuration and state directory.
 
 Important paths:
 
@@ -184,4 +184,4 @@ Important paths:
 
 ## Contributing
 
-If you want to contribute, read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request. Because Minerva Code is a fork, keep changes clear about whether they belong to the Minerva layer, the upstream-compatible OpenCode runtime, or the compatibility boundary between them.
+If you want to contribute, read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.

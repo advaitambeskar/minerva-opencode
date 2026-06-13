@@ -1,11 +1,11 @@
 import { describe, expect } from "bun:test"
 import { Effect, Exit, Layer, Scope } from "effect"
-import { AbsolutePath } from "@opencode-ai/core/schema"
-import { Global } from "@opencode-ai/core/global"
-import { Reference } from "@opencode-ai/core/reference"
-import { Repository } from "@opencode-ai/core/repository"
-import { RepositoryCache } from "@opencode-ai/core/repository-cache"
-import { EventV2 } from "@opencode-ai/core/event"
+import { AbsolutePath } from "@minerva-ai/core/schema"
+import { Global } from "@minerva-ai/core/global"
+import { Reference } from "@minerva-ai/core/reference"
+import { Repository } from "@minerva-ai/core/repository"
+import { RepositoryCache } from "@minerva-ai/core/repository-cache"
+import { EventV2 } from "@minerva-ai/core/event"
 import { it } from "./lib/effect"
 
 const cache = Layer.mock(RepositoryCache.Service, {

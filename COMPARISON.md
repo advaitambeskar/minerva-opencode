@@ -1,6 +1,6 @@
 # How Minerva Code Compares
 
-Minerva Code is an [OpenCode](https://github.com/anomalyco/opencode) fork. It keeps OpenCode's terminal workflow, multi-surface apps, model flexibility, LSP, MCP, and provider integrations, then adds a **memory-first project brain** for long-running engineering work.
+Minerva Code is an [OpenCode](https://github.com/advaitambeskar/minerva-opencode) fork. It keeps OpenCode's terminal workflow, multi-surface apps, model flexibility, LSP, MCP, and provider integrations, then adds a **memory-first project brain** for long-running engineering work.
 
 This page compares Minerva Code to [OpenCode](https://opencode.ai/), [Cursor](https://cursor.com/home), [Claude Code](https://claude.com/product/claude-code), and [OpenAI Codex](https://openai.com/codex/).
 

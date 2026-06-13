@@ -1,13 +1,13 @@
 import { describe, expect } from "bun:test"
 import { Effect, Layer } from "effect"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Global } from "@opencode-ai/core/global"
-import { Location } from "@opencode-ai/core/location"
-import { AbsolutePath } from "@opencode-ai/core/schema"
-import { SystemContext } from "@opencode-ai/core/system-context"
-import { SystemContextBuiltIns } from "@opencode-ai/core/system-context/builtins"
-import { SystemContextRegistry } from "@opencode-ai/core/system-context/registry"
+import { FSUtil } from "@minerva-ai/core/fs-util"
+import { Flag } from "@minerva-ai/core/flag/flag"
+import { Global } from "@minerva-ai/core/global"
+import { Location } from "@minerva-ai/core/location"
+import { AbsolutePath } from "@minerva-ai/core/schema"
+import { SystemContext } from "@minerva-ai/core/system-context"
+import { SystemContextBuiltIns } from "@minerva-ai/core/system-context/builtins"
+import { SystemContextRegistry } from "@minerva-ai/core/system-context/registry"
 import { location } from "./fixture/location"
 import { testEffect } from "./lib/effect"
 
@@ -37,7 +37,7 @@ const memoryFS = Layer.effect(
 const locationLayer = Layer.succeed(
   Location.Service,
   Location.Service.of(
-    location({ directory: AbsolutePath.make("/repo/packages/opencode") }, { projectDirectory: projectDir }),
+    location({ directory: AbsolutePath.make("/repo/packages/minerva") }, { projectDirectory: projectDir }),
   ),
 )
 

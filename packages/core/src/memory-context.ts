@@ -9,7 +9,7 @@ export * as MemoryContext from "./memory-context"
  * This is a lightweight read-only context source (like InstructionContext) that
  * lives in packages/core so it can be wired into the Location layer without
  * depending on the opencode-package Memory.Service. The full Memory.Service
- * (FTS indexing, write operations, secret redaction) lives in packages/opencode.
+ * (FTS indexing, write operations, secret redaction) lives in packages/minerva.
  */
 
 import path from "path"
@@ -53,7 +53,7 @@ export const layer = Layer.effectDiscard(
     const location = yield* Location.Service
     const registry = yield* SystemContextRegistry.Service
 
-    if (Flag.OPENCODE_DISABLE_PROJECT_CONFIG) return
+    if (Flag.MINERVA_DISABLE_PROJECT_CONFIG) return
 
     const projectDir = location.project.directory
 

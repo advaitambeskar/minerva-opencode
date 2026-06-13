@@ -11,7 +11,7 @@ export const OpencodePlugin = PluginV2.define({
         const item = evt.provider.get(ProviderV2.ID.opencode)
         if (!item) return
         hasKey = Boolean(
-          process.env.OPENCODE_API_KEY ||
+          process.env.MINERVA_API_KEY ||
             item.provider.env.some((env) => process.env[env]) ||
             item.provider.request.body.apiKey ||
             (item.provider.enabled && item.provider.enabled.via === "credential"),

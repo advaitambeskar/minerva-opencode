@@ -125,15 +125,15 @@ export default function Download() {
                 </code>
                 <CopyStatus />
               </button>
-              <button data-component="cli-row" onClick={handleCopyClick("npm i -g opencode-ai")}>
+              <button data-component="cli-row" onClick={handleCopyClick("npm i -g minerva-ai")}>
                 <code>
-                  npm i -g <strong>opencode-ai</strong>
+                  npm i -g <strong>minerva-ai</strong>
                 </code>
                 <CopyStatus />
               </button>
-              <button data-component="cli-row" onClick={handleCopyClick("bun add -g opencode-ai")}>
+              <button data-component="cli-row" onClick={handleCopyClick("bun add -g minerva-ai")}>
                 <code>
-                  bun add -g <strong>opencode-ai</strong>
+                  bun add -g <strong>minerva-ai</strong>
                 </code>
                 <CopyStatus />
               </button>

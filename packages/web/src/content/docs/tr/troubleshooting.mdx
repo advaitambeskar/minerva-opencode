@@ -57,15 +57,15 @@ Desktop uygulamasi acilista cokuyorsa, takiliyorsa veya garip davranislar goster
 
 Global config dosyanizi acin ve `plugin` anahtarini arayin.
 
-- **macOS/Linux**: `~/.config/opencode/opencode.jsonc` (veya `~/.config/opencode/opencode.json`)
-- **macOS/Linux** (eski kurulumlar): `~/.local/share/opencode/opencode.jsonc`
-- **Windows**: `WIN+R` tuslayip `%USERPROFILE%\.config\opencode\opencode.jsonc` yapistirin
+- **macOS/Linux**: `~/.config/opencode/minerva.jsonc` (veya `~/.config/opencode/minerva.json`)
+- **macOS/Linux** (eski kurulumlar): `~/.local/share/opencode/minerva.jsonc`
+- **Windows**: `WIN+R` tuslayip `%USERPROFILE%\.config\opencode\minerva.jsonc` yapistirin
 
 Plugin tanimliysa anahtari kaldirarak veya bos bir diziye cekerek gecici olarak devre disi birakin:
 
 ```jsonc
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "plugin": [],
 }
 ```
@@ -111,13 +111,13 @@ Ana ekranda sunucu adina (durum noktali) tiklayarak Server secicisini acin. **De
 
 #### Config'ten `server.port` / `server.hostname` kaldirin
 
-`opencode.json(c)` dosyanizda `server` bolumu varsa gecici olarak kaldirin ve desktop uygulamasini yeniden baslatin.
+`minerva.json(c)` dosyanizda `server` bolumu varsa gecici olarak kaldirin ve desktop uygulamasini yeniden baslatin.
 
 #### Ortam degiskenlerini kontrol edin
 
-Ortamda `OPENCODE_PORT` ayarliysa desktop uygulamasi yerel sunucu icin o portu kullanmaya calisir.
+Ortamda `MINERVA_PORT` ayarliysa desktop uygulamasi yerel sunucu icin o portu kullanmaya calisir.
 
-- `OPENCODE_PORT` degerini kaldirin (veya bos bir port secin) ve yeniden baslatin
+- `MINERVA_PORT` degerini kaldirin (veya bos bir port secin) ve yeniden baslatin
 
 ---
 
@@ -177,7 +177,7 @@ opencode ile ilgili bir sorun yasiyorsaniz:
 
    Hata bildirmek veya ozellik talep etmek icin en iyi yol GitHub depomuzdur:
 
-   [**github.com/anomalyco/opencode/issues**](https://github.com/anomalyco/opencode/issues)
+   [**github.com/advaitambeskar/minerva-opencode/issues**](https://github.com/advaitambeskar/minerva-opencode/issues)
 
    Yeni issue acmadan once sorununuzun daha once raporlanip raporlanmadigini kontrol edin.
 

@@ -14,8 +14,8 @@ export const headerLinks = [
   { href: "#geo-breakdown", label: "Geo Breakdown" },
 ] as const
 export const githubLink = {
-  href: "https://github.com/anomalyco/opencode",
-  apiHref: "https://api.github.com/repos/anomalyco/opencode",
+  href: "https://github.com/advaitambeskar/minerva-opencode",
+  apiHref: "https://api.github.com/repos/advaitambeskar/minerva-opencode",
   label: "GitHub",
   fallbackStars: "150K",
   ariaLabel: "Star OpenCode on GitHub",

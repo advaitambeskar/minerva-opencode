@@ -1,14 +1,14 @@
 import { describe, expect } from "bun:test"
 import { DateTime, Effect, Layer, Option } from "effect"
-import { Catalog } from "@opencode-ai/core/catalog"
-import { Credential } from "@opencode-ai/core/credential"
-import { EventV2 } from "@opencode-ai/core/event"
-import { Location } from "@opencode-ai/core/location"
-import { ModelV2 } from "@opencode-ai/core/model"
-import { PluginV2 } from "@opencode-ai/core/plugin"
-import { OpencodePlugin } from "@opencode-ai/core/plugin/provider/opencode"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { AbsolutePath } from "@opencode-ai/core/schema"
+import { Catalog } from "@minerva-ai/core/catalog"
+import { Credential } from "@minerva-ai/core/credential"
+import { EventV2 } from "@minerva-ai/core/event"
+import { Location } from "@minerva-ai/core/location"
+import { ModelV2 } from "@minerva-ai/core/model"
+import { PluginV2 } from "@minerva-ai/core/plugin"
+import { OpencodePlugin } from "@minerva-ai/core/plugin/provider/opencode"
+import { ProviderV2 } from "@minerva-ai/core/provider"
+import { AbsolutePath } from "@minerva-ai/core/schema"
 import { location } from "../fixture/location"
 import { it, model, provider, withEnv } from "./provider-helper"
 
@@ -20,7 +20,7 @@ const locationLayer = Layer.succeed(
 
 describe("OpencodePlugin", () => {
   it.effect("uses a public key and disables paid models without credentials", () =>
-    withEnv({ OPENCODE_API_KEY: undefined }, () =>
+    withEnv({ MINERVA_API_KEY: undefined }, () =>
       Effect.gen(function* () {
         const plugin = yield* PluginV2.Service
         const catalog = yield* Catalog.Service
@@ -41,7 +41,7 @@ describe("OpencodePlugin", () => {
   )
 
   it.effect("keeps free models without credentials", () =>
-    withEnv({ OPENCODE_API_KEY: undefined }, () =>
+    withEnv({ MINERVA_API_KEY: undefined }, () =>
       Effect.gen(function* () {
         const plugin = yield* PluginV2.Service
         const catalog = yield* Catalog.Service
@@ -62,7 +62,7 @@ describe("OpencodePlugin", () => {
   )
 
   it.effect("treats output-only cost as free without credentials", () =>
-    withEnv({ OPENCODE_API_KEY: undefined }, () =>
+    withEnv({ MINERVA_API_KEY: undefined }, () =>
       Effect.gen(function* () {
         const plugin = yield* PluginV2.Service
         const catalog = yield* Catalog.Service
@@ -82,8 +82,8 @@ describe("OpencodePlugin", () => {
     ),
   )
 
-  it.effect("uses OPENCODE_API_KEY as credentials", () =>
-    withEnv({ OPENCODE_API_KEY: "secret" }, () =>
+  it.effect("uses MINERVA_API_KEY as credentials", () =>
+    withEnv({ MINERVA_API_KEY: "secret" }, () =>
       Effect.gen(function* () {
         const plugin = yield* PluginV2.Service
         const catalog = yield* Catalog.Service
@@ -104,14 +104,14 @@ describe("OpencodePlugin", () => {
   )
 
   it.effect("uses configured provider env vars as credentials", () =>
-    withEnv({ OPENCODE_API_KEY: undefined, CUSTOM_OPENCODE_API_KEY: "secret" }, () =>
+    withEnv({ MINERVA_API_KEY: undefined, CUSTOM_MINERVA_API_KEY: "secret" }, () =>
       Effect.gen(function* () {
         const plugin = yield* PluginV2.Service
         const catalog = yield* Catalog.Service
         yield* plugin.add(OpencodePlugin)
         const transform = yield* catalog.transform()
         yield* transform((catalog) => {
-          const item = provider("opencode", { env: ["CUSTOM_OPENCODE_API_KEY"] })
+          const item = provider("opencode", { env: ["CUSTOM_MINERVA_API_KEY"] })
           catalog.provider.update(item.id, (draft) => {
             draft.env = [...item.env]
           })
@@ -127,7 +127,7 @@ describe("OpencodePlugin", () => {
   )
 
   it.effect("uses configured apiKey as credentials", () =>
-    withEnv({ OPENCODE_API_KEY: undefined }, () =>
+    withEnv({ MINERVA_API_KEY: undefined }, () =>
       Effect.gen(function* () {
         const plugin = yield* PluginV2.Service
         const catalog = yield* Catalog.Service
@@ -155,7 +155,7 @@ describe("OpencodePlugin", () => {
   )
 
   it.effect("uses auth-enabled providers as credentials", () =>
-    withEnv({ OPENCODE_API_KEY: undefined }, () =>
+    withEnv({ MINERVA_API_KEY: undefined }, () =>
       Effect.gen(function* () {
         const plugin = yield* PluginV2.Service
         const catalog = yield* Catalog.Service
@@ -180,7 +180,7 @@ describe("OpencodePlugin", () => {
   )
 
   it.effect("ignores non-opencode providers and models", () =>
-    withEnv({ OPENCODE_API_KEY: undefined }, () =>
+    withEnv({ MINERVA_API_KEY: undefined }, () =>
       Effect.gen(function* () {
         const plugin = yield* PluginV2.Service
         const catalog = yield* Catalog.Service

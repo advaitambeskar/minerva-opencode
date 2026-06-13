@@ -1,6 +1,6 @@
 export * as WebSearchTool from "./websearch"
 
-import { ToolFailure } from "@opencode-ai/llm"
+import { ToolFailure } from "@minerva-ai/llm"
 import { Context, Duration, Effect, Layer, Schema } from "effect"
 import { HttpClient, HttpClientRequest } from "effect/unstable/http"
 import { truthy } from "../flag/flag"
@@ -69,11 +69,11 @@ export class ConfigService extends Context.Service<ConfigService, Config>()("@op
 export const defaultConfigLayer = Layer.sync(ConfigService, () =>
   ConfigService.of({
     provider:
-      process.env.OPENCODE_WEBSEARCH_PROVIDER === "exa" || process.env.OPENCODE_WEBSEARCH_PROVIDER === "parallel"
-        ? process.env.OPENCODE_WEBSEARCH_PROVIDER
+      process.env.MINERVA_WEBSEARCH_PROVIDER === "exa" || process.env.MINERVA_WEBSEARCH_PROVIDER === "parallel"
+        ? process.env.MINERVA_WEBSEARCH_PROVIDER
         : undefined,
-    enableExa: truthy("OPENCODE_EXPERIMENTAL") || truthy("OPENCODE_ENABLE_EXA") || truthy("OPENCODE_EXPERIMENTAL_EXA"),
-    enableParallel: truthy("OPENCODE_ENABLE_PARALLEL") || truthy("OPENCODE_EXPERIMENTAL_PARALLEL"),
+    enableExa: truthy("MINERVA_EXPERIMENTAL") || truthy("MINERVA_ENABLE_EXA") || truthy("MINERVA_EXPERIMENTAL_EXA"),
+    enableParallel: truthy("MINERVA_ENABLE_PARALLEL") || truthy("MINERVA_EXPERIMENTAL_PARALLEL"),
     exaApiKey: process.env.EXA_API_KEY,
     parallelApiKey: process.env.PARALLEL_API_KEY,
   }),

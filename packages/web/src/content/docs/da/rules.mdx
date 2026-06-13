@@ -77,9 +77,9 @@ For brugere som migrerer fra Claude Code, støtter OpenCode Claude Codes filkonv
 For at deaktivere Claude Code-kompatibilitet, sett en av disse miljøvariablene:
 
 ```bash
-export OPENCODE_DISABLE_CLAUDE_CODE=1        # Disable all .claude support
-export OPENCODE_DISABLE_CLAUDE_CODE_PROMPT=1 # Disable only ~/.claude/CLAUDE.md
-export OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1 # Disable only .claude/skills
+export MINERVA_DISABLE_CLAUDE_CODE=1        # Disable all .claude support
+export MINERVA_DISABLE_CLAUDE_CODE_PROMPT=1 # Disable only ~/.claude/CLAUDE.md
+export MINERVA_DISABLE_CLAUDE_CODE_SKILLS=1 # Disable only .claude/skills
 ```
 
 ---
@@ -98,22 +98,22 @@ Den første matchende filen vinner i hver kategori. For eksempel, hvis du har b�
 
 ## Brugerdefinerede instruktioner
 
-Du kan spesifisere egendefinerte instruksjonsfiler i din `opencode.json` eller den globale `~/.config/opencode/opencode.json`. Dette lar deg og teamet ditt gjenbruge eksisterende regler i stedet for at måtte duplisere dem til AGENTS.md.
+Du kan spesifisere egendefinerte instruksjonsfiler i din `minerva.json` eller den globale `~/.config/opencode/minerva.json`. Dette lar deg og teamet ditt gjenbruge eksisterende regler i stedet for at måtte duplisere dem til AGENTS.md.
 
 Eksempel:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "instructions": ["CONTRIBUTING.md", "docs/guidelines.md", ".cursor/rules/*.md"]
 }
 ```
 
 Du kan også bruge eksterne URL-er for at laste instruksjoner fra nettet.
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "instructions": ["https://raw.githubusercontent.com/my-org/shared-rules/main/style.md"]
 }
 ```
@@ -128,13 +128,13 @@ Alle instruksjonsfilene er kombinert med `AGENTS.md`-filene dine.
 
 Selv om opencode ikke automatisk analyserer filreferanser i `AGENTS.md`, kan du oppnå lignende funksjonalitet på to måter:
 
-### Brug af opencode.json
+### Brug af minerva.json
 
-Den anbefalte tilnærmingen er at bruge feltet `instructions` i `opencode.json`:
+Den anbefalte tilnærmingen er at bruge feltet `instructions` i `minerva.json`:
 
-```json title="opencode.json"
+```json title="minerva.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "instructions": ["docs/development-standards.md", "test/testing-guidelines.md", "packages/*/AGENTS.md"]
 }
 ```
@@ -176,5 +176,5 @@ Denne tilnærmingen lar deg:
 - Sørg for at opencode laster filer kun når det er nødvendig for den spesifikke oppgaven
 
 :::tip
-For monorepos eller prosjekter med delte standarder er brug av `opencode.json` med glob-mønstre (som `packages/*/AGENTS.md`) mer vedlikeholdbart enn manuelle instruksjoner.
+For monorepos eller prosjekter med delte standarder er brug av `minerva.json` med glob-mønstre (som `packages/*/AGENTS.md`) mer vedlikeholdbart enn manuelle instruksjoner.
 :::

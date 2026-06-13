@@ -1,7 +1,7 @@
 <!--
   Built-in skill. Name and description are registered in code at
   packages/core/src/plugin/skill.ts
-  and CUSTOMIZE_OPENCODE_SKILL_DESCRIPTION). The body below becomes the
+  and CUSTOMIZE_MINERVA_SKILL_DESCRIPTION). The body below becomes the
   skill's content.
 -->
 
@@ -16,21 +16,21 @@ is wrong. The shapes below cover the common surface area, but they are a
 The authoritative list of every config option — with field types, enums,
 defaults, and descriptions — lives in the published JSON Schema:
 
-**<https://opencode.ai/config.json>**
+**<https://minerva.dev/config.json>**
 
 If a field is not documented in this skill, or you need to confirm an exact
 shape before writing config, **fetch that URL and read the schema directly**
 rather than guessing. opencode hard-fails on invalid config, so the cost of a
 wrong shape is a broken startup.
 
-Independently, every `opencode.json` should declare
-`"$schema": "https://opencode.ai/config.json"` so the user's editor catches
+Independently, every `minerva.json` should declare
+`"$schema": "https://minerva.dev/config.json"` so the user's editor catches
 mistakes as they type.
 
 ## Applying changes
 
 Config is loaded once when opencode starts and is not hot-reloaded. After
-saving changes to `opencode.json`, an agent file, a skill, a plugin, or any
+saving changes to `minerva.json`, an agent file, a skill, a plugin, or any
 other config-time file, **tell the user to quit and restart opencode** for
 the changes to take effect. The running session will keep using the
 already-loaded config until then.
@@ -39,8 +39,8 @@ already-loaded config until then.
 
 | Scope                         | Path                                                                                                                      |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Project config                | `./opencode.json`, `./opencode.jsonc`, or `.opencode/opencode.json` (opencode walks up from the cwd to the worktree root) |
-| Global config                 | `~/.config/opencode/opencode.json` (NOT `~/.opencode/`)                                                                   |
+| Project config                | `./minerva.json`, `./minerva.jsonc`, or `.opencode/minerva.json` (opencode walks up from the cwd to the worktree root) |
+| Global config                 | `~/.config/opencode/minerva.json` (NOT `~/.opencode/`)                                                                   |
 | Project agents                | `.opencode/agent/<name>.md` or `.opencode/agents/<name>.md`                                                               |
 | Global agents                 | `~/.config/opencode/agent(s)/<name>.md`                                                                                   |
 | Project skills                | `.opencode/skill(s)/<name>/SKILL.md`                                                                                      |
@@ -48,15 +48,15 @@ already-loaded config until then.
 | External skills (auto-loaded) | `~/.claude/skills/<name>/SKILL.md`, `~/.agents/skills/<name>/SKILL.md`                                                    |
 
 Configs from each scope are deep-merged. Project overrides global. Unknown
-top-level keys in `opencode.json` are rejected with `ConfigInvalidError`.
+top-level keys in `minerva.json` are rejected with `ConfigInvalidError`.
 
-## opencode.json
+## minerva.json
 
 Every field is optional.
 
 ```json
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://minerva.dev/config.json",
   "username": "string",
   "model": "provider/model-id",
   "small_model": "provider/model-id",
@@ -222,7 +222,7 @@ Local `path` values may be relative to the declaring config, absolute, or use
 
 Two ways to define an agent. Use the file form for anything non-trivial.
 
-### Inline (in `opencode.json`)
+### Inline (in `minerva.json`)
 
 ```json
 {
@@ -300,7 +300,7 @@ function, not a plain object literal, and the function returns an object
 (return `{}` if there is nothing to register).
 
 ```ts
-import type { Plugin } from "@opencode-ai/plugin"
+import type { Plugin } from "@minerva-ai/plugin"
 
 export default (async ({ client, project, directory, $ }) => {
   return {
@@ -397,26 +397,26 @@ the `plan` agent's permission ruleset (`edit: deny *`).
 
 When a user's config is broken and opencode won't start, these env vars help:
 
-- `OPENCODE_DISABLE_PROJECT_CONFIG=1`: skip the project's local `opencode.json`
+- `MINERVA_DISABLE_PROJECT_CONFIG=1`: skip the project's local `minerva.json`
   and start from globals only. Run from the project directory, opencode loads,
   the user edits the broken file, then they restart without the flag.
-- `OPENCODE_CONFIG=/path/to/file.json`: load an additional explicit config.
-- `OPENCODE_CONFIG_CONTENT='{"$schema":"https://opencode.ai/config.json"}'`:
+- `MINERVA_CONFIG=/path/to/file.json`: load an additional explicit config.
+- `MINERVA_CONFIG_CONTENT='{"$schema":"https://minerva.dev/config.json"}'`:
   inject inline JSON as a final local-scope merge.
-- `OPENCODE_DISABLE_DEFAULT_PLUGINS=1`: skip default plugins.
-- `OPENCODE_PURE=1`: skip external plugins entirely.
-- `OPENCODE_DISABLE_EXTERNAL_SKILLS=1`,
-  `OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1`: skip the external skill scans under
+- `MINERVA_DISABLE_DEFAULT_PLUGINS=1`: skip default plugins.
+- `MINERVA_PURE=1`: skip external plugins entirely.
+- `MINERVA_DISABLE_EXTERNAL_SKILLS=1`,
+  `MINERVA_DISABLE_CLAUDE_CODE_SKILLS=1`: skip the external skill scans under
   `~/.claude/` and `~/.agents/`.
 
 ## When proposing edits
 
 - Validate against the schema before writing. If you are unsure of a field's
   exact shape, or the field is not covered in this skill, fetch
-  `https://opencode.ai/config.json` and read the schema rather than guessing.
+  `https://minerva.dev/config.json` and read the schema rather than guessing.
 - Preserve `$schema` and any existing fields the user did not ask to change.
 - For agent, skill, and plugin definitions, prefer creating new files in the
-  correct location over inlining everything in `opencode.json`.
+  correct location over inlining everything in `minerva.json`.
 - If the user's existing config is malformed, point them at the env-var escape
   hatches above so they can edit from inside opencode without breaking their
   session.
